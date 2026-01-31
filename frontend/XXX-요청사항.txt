@@ -7,4 +7,6 @@ pnpm install ./packages/so-grid-core-0.1.0.tgz ./packages/so-grid-react-0.1.0.tg
    
 
 
-
+???
+    1. **시작**: "먼저 계획을 세워줘" 또는 "implementation plan 작성해줘"
+       <!-- Cursor 전용: Shift+Tab 2번으로 Plan Mode 진입 가능 -->
