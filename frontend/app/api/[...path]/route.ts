@@ -4,9 +4,10 @@ import {
     setSessionCookies,
     clearSessionCookies,
 } from '@/lib/auth/cookie-utils';
+import { serverEnv } from '@/lib/env';
 
-// Backend API URL from environment variable
-export const API_URL = process.env.BACKEND_API_URL || 'http://localhost:8080/api';
+// Backend API URL (서버 사이드 전용)
+export const API_URL = serverEnv.BACKEND_API_URL || 'http://localhost:8080/api';
 
 async function proxyRequest(request: NextRequest, path: string) {
     // Read tokens from HttpOnly Cookies

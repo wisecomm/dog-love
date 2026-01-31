@@ -5,13 +5,14 @@
  * 주의: "use server" 지시어가 없음 - 서버 사이드 전용 유틸리티
  */
 import { cookies } from 'next/headers';
+import { serverEnv } from '@/lib/env';
 
 export const COOKIE_ACCESS_TOKEN = 'accessToken';
 export const COOKIE_REFRESH_TOKEN = 'refreshToken';
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE === 'true' || (process.env.NODE_ENV === 'production' && process.env.COOKIE_SECURE !== 'false'),
+    secure: serverEnv.COOKIE_SECURE === 'true' || (serverEnv.NODE_ENV === 'production' && serverEnv.COOKIE_SECURE !== 'false'),
     sameSite: 'lax' as const,
     path: '/',
 };

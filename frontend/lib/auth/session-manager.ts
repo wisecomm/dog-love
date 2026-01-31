@@ -9,6 +9,7 @@
  */
 
 import { LoginData, UserInfo } from './types';
+import { SESSION_TIMEOUT_MS } from '@/lib/env';
 
 /**
  * 세션 스토리지 키 정의
@@ -19,12 +20,7 @@ const SESSION_KEYS = {
     SAVED_ID: 'savedId',
 } as const;
 
-/**
- * 세션 타임아웃 설정
- * 환경 변수에서 시간을 가져오거나 기본값(30분) 사용
- */
-const TIMEOUT_ENV = process.env.NEXT_PUBLIC_SESSION_TIMEOUT_MS;
-export const SESSION_TIMEOUT_MS = TIMEOUT_ENV ? parseInt(TIMEOUT_ENV, 10) : 30 * 60 * 1000;
+// SESSION_TIMEOUT_MS는 lib/env.ts에서 import
 
 /**
  * 세션 데이터 타입

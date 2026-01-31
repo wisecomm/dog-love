@@ -11,6 +11,7 @@
 
 import axios, { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios';
 import { ApiResponse } from '@/types';
+import { env } from '@/lib/env';
 
 /**
  * Axios 인스턴스 생성
@@ -19,7 +20,7 @@ const createAxiosInstance = (): AxiosInstance => {
     const instance = axios.create({
         // Next.js Proxy 사용 (app/api/[...path]/route.ts 참고)
         // 개발/운영 환경 모두 /api 경로로 요청하면 Manual Proxy가 백엔드로 전달합니다.
-        baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
+        baseURL: env.NEXT_PUBLIC_API_URL,
         timeout: 30000,
         headers: {
             'Content-Type': 'application/json',

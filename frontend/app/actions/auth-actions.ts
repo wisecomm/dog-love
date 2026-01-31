@@ -7,9 +7,10 @@ import {
     setSessionCookies,
     clearSessionCookies,
 } from '@/lib/auth/cookie-utils';
+import { serverEnv } from '@/lib/env';
 
-// Backend API URL (Use directly, consistent with route.ts)
-const API_URL = process.env.BACKEND_API_URL || 'http://localhost:8080/api';
+// Backend API URL (서버 사이드 전용)
+const API_URL = serverEnv.BACKEND_API_URL || 'http://localhost:8080/api';
 
 /**
  * Get tokens from cookies (Server Side)

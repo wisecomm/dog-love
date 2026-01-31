@@ -4,7 +4,8 @@
  * 인증 관련 모든 기능을 중앙에서 export
  */
 
-export { sessionManager, SESSION_TIMEOUT_MS } from './session-manager';
+export { sessionManager } from './session-manager';
+export { SESSION_TIMEOUT_MS } from '@/lib/env';
 export type { SessionData } from './session-manager';
 
 export { authService } from './auth-service';
