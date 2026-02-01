@@ -1,0 +1,61 @@
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: "app/**"
+      - any-glob-to-any-file: "components/**"
+
+api:
+  - changed-files:
+      - any-glob-to-any-file: "app/api/**"
+      - any-glob-to-any-file: "app/actions/**"
+      - any-glob-to-any-file: "lib/api-client.ts"
+      - any-glob-to-any-file: "lib/base-resource-client.ts"
+
+hooks:
+  - changed-files:
+      - any-glob-to-any-file: "hooks/**"
+
+store:
+  - changed-files:
+      - any-glob-to-any-file: "store/**"
+
+ui:
+  - changed-files:
+      - any-glob-to-any-file: "components/ui/**"
+
+test:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.test.{ts,tsx}"
+      - any-glob-to-any-file: "tests/**"
+      - any-glob-to-any-file: "vitest.config.ts"
+      - any-glob-to-any-file: "playwright.config.ts"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file: "*.config.*"
+      - any-glob-to-any-file: "tsconfig.json"
+      - any-glob-to-any-file: ".eslint*"
+      - any-glob-to-any-file: ".prettier*"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: "docs/**"
+      - any-glob-to-any-file: "**/*.md"
+
+styles:
+  - changed-files:
+      - any-glob-to-any-file: "app/globals.css"
+      - any-glob-to-any-file: "postcss.config.*"
+
+auth:
+  - changed-files:
+      - any-glob-to-any-file: "lib/auth/**"
+      - any-glob-to-any-file: "app/actions/auth-*"
+      - any-glob-to-any-file: "hooks/use-auth-*"
+
+types:
+  - changed-files:
+      - any-glob-to-any-file: "types/**"
