@@ -17,8 +17,11 @@ pnpm lint           # ESLint 검사
 pnpm typecheck      # TypeScript 타입 검사 (tsc --noEmit)
 pnpm format:check   # Prettier 포맷 검사
 pnpm format:fix     # Prettier 자동 수정
+pnpm test           # vitest 유닛 테스트
+pnpm test:watch     # vitest watch 모드
+pnpm test:coverage  # 커버리지 포함 테스트 (70% 임계값)
 pnpm test:e2e       # Playwright E2E 테스트
-pnpm validate       # 전체 검증 (lint + typecheck + build)
+pnpm validate       # 전체 검증 (lint + typecheck + test + build)
 ```
 
 ## 코드 수정 후 필수 검증 절차
@@ -27,7 +30,8 @@ pnpm validate       # 전체 검증 (lint + typecheck + build)
 
 1. `pnpm lint` — ESLint 통과 확인
 2. `pnpm typecheck` — 타입 에러 없음 확인
-3. `pnpm build` — 빌드 성공 확인
+3. `pnpm test` — 유닛 테스트 통과 확인
+4. `pnpm build` — 빌드 성공 확인
 
 실패 시 스스로 수정하고 다시 검증할 것. 모든 검증을 통과할 때까지 반복.
 
@@ -62,3 +66,17 @@ pnpm validate       # 전체 검증 (lint + typecheck + build)
 - API 호출: `lib/api/api-client.ts`의 Axios 인스턴스 사용
 - 불필요한 코드, 주석, docstring 추가 금지
 - 보안 취약점 (XSS, injection 등) 주의
+
+## 테스트 가이드
+
+- 프레임워크: vitest + @testing-library/react
+- 테스트 파일: 소스 파일 옆에 `*.test.ts` 또는 `*.test.tsx`
+- 커버리지 임계값: 70% (lines/branches/functions/statements)
+- 코드 수정 시 관련 테스트도 함께 작성/수정할 것
+- 테스트 설명은 한국어로 작성
+
+## 에이전트 전용 프롬프트 (.pi/)
+
+- `.pi/prompts/pr.md` — PR 리뷰 (Good/Bad/Ugly 구조)
+- `.pi/prompts/is.md` — 이슈 분석 (버그 근본 원인 추적, 기능 요청 구현 제안)
+- `.pi/prompts/test.md` — 테스트 작성 가이드
