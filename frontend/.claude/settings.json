@@ -1,0 +1,6 @@
+{
+  "hooks": {
+    "afterEdit": ["pnpm lint", "pnpm typecheck"],
+    "afterWrite": ["pnpm lint", "pnpm typecheck"]
+  }
+}
