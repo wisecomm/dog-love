@@ -126,6 +126,38 @@ GitHub Actions (lint → typecheck → build → e2e) ← 최종 게이트
 | 크로스플랫폼 CI | Windows/macOS/Android 14+ 병렬 검증 |
 
 ### 추후 도입 권장
-1. **vitest 유닛 테스트** — 에이전트가 빠르게 검증할 수 있는 경량 테스트 루프
-2. **에이전트 전용 프롬프트 (`.pi/`)** — PR 리뷰, 이슈 분석 자동화
-3. **시크릿 감지** — 보안 강화
+1. ~~**vitest 유닛 테스트**~~ ✅ 적용 완료
+2. ~~**에이전트 전용 프롬프트 (`.pi/`)**~~ ✅ 적용 완료
+3. ~~**에이전트 워크플로우 (`.agent/workflows/`)**~~ ✅ 적용 완료
+4. **시크릿 감지** — 보안 강화
+5. **멀티에이전트 안전수칙** — 동시 작업 시 충돌 방지
+
+---
+
+## 6. 추가 적용: vitest + .pi/ + .agent/workflows/
+
+### vitest 유닛 테스트
+
+| 파일 | 역할 |
+|------|------|
+| `vitest.config.ts` | vitest 설정 (jsdom, path alias, 커버리지 70%) |
+| `vitest.setup.ts` | jest-dom matchers 연동 |
+| `lib/utils.test.ts` | cn() 유틸리티 테스트 (5개 통과) |
+| `package.json` | `test`, `test:watch`, `test:coverage` 추가, `validate`에 test 포함 |
+
+### 에이전트 전용 프롬프트 (.pi/)
+
+| 파일 | 역할 |
+|------|------|
+| `.pi/prompts/pr.md` | PR 리뷰 (Good/Bad/Ugly, 보안/성능 체크리스트) |
+| `.pi/prompts/is.md` | 이슈 분석 (근본 원인 추적, 구현 제안) |
+| `.pi/prompts/test.md` | 테스트 작성 가이드 (vitest + testing-library) |
+
+### 에이전트 워크플로우 (.agent/workflows/)
+
+| 파일 | 역할 |
+|------|------|
+| `deploy.md` | 배포 (사전 검증 → 환경별 빌드 → 결과 검증 → 배포) |
+| `new-feature.md` | 신규 기능 (설계 → 타입 → API → 컴포넌트 → 테스트 → 검증) |
+| `bug-fix.md` | 버그 수정 (재현 → 원인 분석 → 최소 수정 → 회귀 테스트) |
+| `refactor.md` | 리팩토링 (범위 정의 → 기존 테스트 → 단계별 수정 → 검증) |

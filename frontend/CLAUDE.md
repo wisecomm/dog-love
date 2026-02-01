@@ -80,3 +80,12 @@ pnpm validate       # 전체 검증 (lint + typecheck + test + build)
 - `.pi/prompts/pr.md` — PR 리뷰 (Good/Bad/Ugly 구조)
 - `.pi/prompts/is.md` — 이슈 분석 (버그 근본 원인 추적, 기능 요청 구현 제안)
 - `.pi/prompts/test.md` — 테스트 작성 가이드
+
+## 에이전트 워크플로우 (.agent/workflows/)
+
+복잡한 작업은 해당 워크플로우를 따라 단계별로 수행할 것. 각 단계의 검증을 통과해야 다음 단계로 진행.
+
+- `.agent/workflows/deploy.md` — 배포 (사전 검증 → 환경별 빌드 → 결과 검증 → 배포)
+- `.agent/workflows/new-feature.md` — 신규 기능 (설계 → 타입 → API → 컴포넌트 → 테스트 → 검증)
+- `.agent/workflows/bug-fix.md` — 버그 수정 (재현 → 원인 분석 → 최소 수정 → 회귀 테스트 → 검증)
+- `.agent/workflows/refactor.md` — 리팩토링 (범위 정의 → 기존 테스트 확인 → 단계별 수정 → 검증)
