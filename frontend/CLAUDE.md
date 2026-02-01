@@ -39,7 +39,18 @@ pnpm validate       # 전체 검증 (lint + typecheck + test + build)
 
 ## 커밋 규칙
 
-- **모든 검증(`pnpm validate`)을 통과한 후에만 커밋**할 것
+- **커밋 시 `scripts/committer.sh` 사용을 권장** (스코프 제한 커밋):
+
+```bash
+./scripts/committer.sh "feat: add login page" app/login/page.tsx lib/auth.ts hooks/use-auth.ts
+```
+
+- committer가 자동으로 수행하는 것:
+  1. conventional commit 메시지 형식 검증
+  2. 지정 파일만 스테이징 (다른 파일 보호)
+  3. lint + typecheck + test 검증
+  4. 실패 시 스테이징 해제, 통과 시에만 커밋
+
 - 커밋 메시지는 conventional commits 형식 사용:
   - `feat:` 새 기능
   - `fix:` 버그 수정
@@ -47,6 +58,7 @@ pnpm validate       # 전체 검증 (lint + typecheck + test + build)
   - `style:` 포맷/스타일 변경
   - `docs:` 문서 변경
   - `test:` 테스트 추가/수정
+  - `chore:` 기타
 
 ## 코딩 컨벤션
 
