@@ -771,3 +771,18 @@
                                                                                                                                                         
 ● How is Claude doing this session? (optional)                                                                                                          
   1: Bad    2: Fine   3: Good   0: Dismiss      
+
+
+
+  ########### 최종 2개 적용하지 않음 
+   1. 시크릿 감지 (보안)                                                                                                                                 
+                                                                                                                                                        
+  - detect-secrets로 커밋 시 API 키, 토큰, 비밀번호 등 실수로 커밋하는 것 방지                                                                          
+  - pre-commit hook에 추가                                                                                                                              
+                                                                                                                                                        
+  2. 멀티에이전트 안전수칙 (CLAUDE.md 보강)                                                                                                             
+                                                                                                                                                        
+  - 여러 에이전트 동시 작업 시 git stash/브랜치 충돌 방지 프로토콜                                                                                      
+  - 지금은 단일 에이전트 기준으로만 되어 있음            
+
+  
