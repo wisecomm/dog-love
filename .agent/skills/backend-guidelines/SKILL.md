@@ -7,11 +7,14 @@ description: Core architectural rules, coding conventions, and tech stack guidel
 
 ## Tech Stack
 
-- Java 21+ / Kotlin (Check project usage)
-- Spring Boot 3+
-- Gradle (Kotlin DSL preferred)
-- JPA / Hibernate
-- MySQL / PostgreSQL
+- **Java 21** (LTS)
+- **Spring Boot 3.5.10**
+- **Gradle** (Groovy DSL)
+- **MyBatis 3** (w/ PageHelper) — *No JPA*
+- **Database**: PostgreSQL + Flyway (Migration)
+- **Auth**: JWT (jjwt 0.12.6) + Spring Security
+- **Utils**: MapStruct, Lombok, Jasypt (Encryption), Swagger (SpringDoc), Apache POI (Excel)
+- **Logging**: Log4j2 (Logback Excluded)
 
 ## Commands
 
@@ -34,51 +37,47 @@ description: Core architectural rules, coding conventions, and tech stack guidel
 - **커밋 시 해당 스크립트 사용 권장** (스코프 제한 커밋):
 
 ```bash
-./backend/scripts/committer.sh "feat: add user api" src/main/java/User.java
+./backend/scripts/committer.sh "feat: add user api" src/main/java/com/example/springrest/domain/user/
 ```
 
 - committer가 자동으로 수행하는 것:
   1. conventional commit 메시지 형식 검증
-  2. 지정 파일만 스테이징 (다른 파일 보호)
-  3. build + test 검증
-  4. 실패 시 스테이징 해제, 통과 시에만 커밋
-
-- 커밋 메시지는 conventional commits 형식 사용:
-  - `feat:` 새 기능
-  - `fix:` 버그 수정
-  - `refactor:` 리팩토링
-  - `style:` 포맷/스타일 변경
-  - `docs:` 문서 변경
-  - `test:` 테스트 추가/수정
-  - `chore:` 기타
+  2. 지정 파일만 스테이징
+  3. build + test 검증 (실패 시 차단)
 
 ## 코딩 컨벤션
 
-- RESTful API 설계 원칙 준수
-- Controller, Service, Repository 계층 분리
-- DTO 사용 필수 (Entity 직접 반환 금지)
-- 적절한 예외 처리 (@ExceptionHandler)
-- 테스트 코드 작성 필수 (JUnit 5 + Mockito)
+- **Domain-Driven Packaging**: `com.example.springrest.domain.{feature}`
+  - 예: `domain/user`, `domain/auth`
+- **MyBatis Mapper**:
+  - Interface: `Mapper.java` (@Mapper)
+  - XML: `src/main/resources/mapper` (namespace 일치 필수)
+- **DTO 필수**: Entity/VO 직접 반환 금지. `MapStruct` 사용하여 변환.
+- **Logging**: `@Slf4j` 대신 **Log4j2** 사용 권장 (설정 확인 필요)
+- **API Spec**: Controller에 Swagger Annotation (`@Tag`, `@Operation`) 필수
 
-## 디렉토리 구조 (표준 Spring Boot)
+## 디렉토리 구조
 
 ```
-src/
-├── main/
-│   ├── java/com/example/project/
-│   │   ├── config/          # 설정 클래스
-│   │   ├── controller/      # API 엔드포인트
-│   │   ├── service/         # 비즈니스 로직
-│   │   ├── repository/      # 데이터 접근
-│   │   ├── entity/          # DB 엔티티
-│   │   └── dto/             # 데이터 전송 객체
-│   └── resources/
-│       └── application.yml
-└── test/                    # 테스트 코드
+src/main/java/com/example/springrest/
+├── Teacher.java (Main)
+├── common/                  # 공통 유틸/상수
+├── global/                  # 전역 설정 (Config, Exception, Security)
+└── domain/                  # 비즈니스 도메인 (기능별)
+    ├── auth/
+    │   ├── controller/
+    │   ├── service/
+    │   └── mapper/
+    └── user/
+        ├── controller/
+        ├── service/
+        ├── mapper/      # MyBatis Interface
+        ├── dto/
+        └── vo/          # DB Value Object
 ```
 
 ## 주의사항
 
-- 민감 정보는 환경변수 또는 외부 설정 파일로 관리
-- N+1 문제 주의 (FetchType.LAZY 권장)
-- Transaction 관리 (@Transactional) 주의
+- **Lombok + MapStruct**: 빌드 시 Annotation Processor 순서 주의 (`build.gradle` 참조)
+- **MyBatis XML**: 쿼리 수정 시 `resultMap` 매핑 주의
+- **Flyway**: DB 스키마 변경 시 `V{version}__{description}.sql` 추가 필수
