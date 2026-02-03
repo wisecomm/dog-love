@@ -1,6 +1,7 @@
 
 
 # ap 추가 시 ( LAUDE.md 참조 --> .agent/skills/core-guidelines/SKILL.md)
+anti 호출시 : SKILL.md 규칙에 따른 절차(스크립트 기반 커밋)
 예: "로그인 페이지 만들어줘. 완료되면 커밋하고 push까지 해줘"   
 
 사용해보자.txt 에서 워크플로우 사용해보기
