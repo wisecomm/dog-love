@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { filterByType, inputRestrictionLabels, inputModes } from "./use-restricted-input";
 
 describe("filterByType", () => {
@@ -69,5 +69,97 @@ describe("inputModes", () => {
 
   it("english 타입은 text inputMode를 가진다", () => {
     expect(inputModes.english).toBe("text");
+  });
+});
+
+import { renderHook, act } from "@testing-library/react";
+import { useRestrictedInput } from "./use-restricted-input";
+
+describe("useRestrictedInput", () => {
+  it("초기값으로 초기화된다", () => {
+    const { result } = renderHook(() =>
+      useRestrictedInput("english", { initialValue: "hello" })
+    );
+
+    expect(result.current.value).toBe("hello");
+    expect(result.current.displayValue).toBe("hello");
+  });
+
+  it("입력 제한 타입에 맞지 않는 문자는 필터링된다 (english)", () => {
+    const { result } = renderHook(() => useRestrictedInput("english"));
+
+    act(() => {
+      // @ts-expect-error: Mocking event object
+      result.current.onChange({ target: { value: "Popcorn123" } });
+    });
+
+    expect(result.current.value).toBe("Popcorn");
+    expect(result.current.displayValue).toBe("Popcorn");
+  });
+
+  it("maxLength를 초과하면 잘린다", () => {
+    const { result } = renderHook(() =>
+      useRestrictedInput("number", { maxLength: 5 })
+    );
+
+    act(() => {
+      // @ts-expect-error: Mocking event object
+      result.current.onChange({ target: { value: "1234567890" } });
+    });
+
+    expect(result.current.value).toBe("12345");
+  });
+
+  it("currency 타입은 콤마가 포맷팅된다", () => {
+    const { result } = renderHook(() => useRestrictedInput("currency"));
+
+    act(() => {
+      // @ts-expect-error: Mocking event object
+      result.current.onChange({ target: { value: "1234567" } });
+    });
+
+    expect(result.current.displayValue).toBe("1,234,567");
+    expect(result.current.value).toBe("1234567"); // 저장된 실제 값은 콤마 없음
+  });
+
+  it("onValueChange 콜백이 호출된다", () => {
+    const onValueChange = vi.fn();
+    const { result } = renderHook(() =>
+      useRestrictedInput("korean", { onValueChange })
+    );
+
+    act(() => {
+      // @ts-expect-error: Mocking event object
+      result.current.onChange({ target: { value: "안녕하세요abc" } });
+    });
+
+    expect(onValueChange).toHaveBeenCalledWith("안녕하세요");
+  });
+
+  it("reset을 호출하면 초기값으로 돌아간다", () => {
+    const { result } = renderHook(() =>
+      useRestrictedInput("english", { initialValue: "init" })
+    );
+
+    act(() => {
+      // @ts-expect-error: Mocking event object
+      result.current.onChange({ target: { value: "changed" } });
+    });
+    expect(result.current.value).toBe("changed");
+
+    act(() => {
+      result.current.reset();
+    });
+    expect(result.current.value).toBe("init");
+  });
+
+  it("setValue로 값을 직접 설정할 수 있다", () => {
+    const { result } = renderHook(() => useRestrictedInput("english"));
+
+    act(() => {
+      result.current.setValue("direct");
+    });
+
+    expect(result.current.value).toBe("direct");
   });
 });
