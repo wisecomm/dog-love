@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "재고 관리 시스템",
-  description: "PDA 기반 재고 관리 시스템",
+  title: "개좋아",
+  description: "반려견 돌봄 서비스",
 };
 
 export const viewport: Viewport = {
