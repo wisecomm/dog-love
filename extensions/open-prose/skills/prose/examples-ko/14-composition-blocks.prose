@@ -1,0 +1,48 @@
+# 예제 14: 구성 블록
+# do: 블록, 블록 정의, 인라인 시퀀스를 보여줍니다.
+
+# 재사용 가능한 에이전트 정의
+agent researcher:
+  model: sonnet
+  prompt: "당신은 철저한 연구 보조원입니다."
+
+agent writer:
+  model: opus
+  prompt: "당신은 숙련된 기술 작가입니다."
+
+agent reviewer:
+  model: sonnet
+  prompt: "당신은 꼼꼼한 코드 및 문서 리뷰어입니다."
+
+# 재사용 가능한 연구 블록 정의
+block research-phase:
+  session: researcher
+    prompt: "주제에 대한 정보를 수집하세요."
+  session: researcher
+    prompt: "주요 결과를 분석하세요."
+
+# 재사용 가능한 집필 블록 정의
+block writing-phase:
+  session: writer
+    prompt: "초기 초안을 작성하세요."
+  session: writer
+    prompt: "초안을 다듬고 정제하세요."
+
+# 리뷰 블록 정의
+block review-cycle:
+  session: reviewer
+    prompt: "정확성을 리뷰하세요."
+  session: reviewer
+    prompt: "명확성을 리뷰하세요."
+
+# 블록을 사용하는 메인 워크플로우
+let research = do research-phase
+
+let document = do writing-phase
+
+do review-cycle
+
+# 마지막 단계를 위한 익명 do 블록 사용
+do:
+  session "리뷰 피드백을 반영하세요."
+  session "최종 버전을 준비하세요."

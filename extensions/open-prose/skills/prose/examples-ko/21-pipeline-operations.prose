@@ -1,0 +1,35 @@
+# 파이프라인 연산 예제
+# 함수형 스타일의 컬렉션 변환을 보여줍니다.
+
+# 스타트업 아이디어 컬렉션 정의
+let ideas = ["AI 튜터", "스마트 정원", "피트니스 트래커", "식단 플래너", "여행 비서"]
+
+# 기술 중심 아이디어만 필터링
+let tech_ideas = ideas | filter:
+  session "이 아이디어가 주로 기술 중심인가요? 예 또는 아니오로 대답하세요."
+    context: item
+
+# 맵(Map)을 사용하여 각 아이디어를 사업 아이템 소개로 확장
+let pitches = tech_ideas | map:
+  session "이 아이디어에 대해 설득력 있는 한 문단짜리 사업 소개를 작성하세요."
+    context: item
+
+# 리듀스(Reduce)를 사용하여 모든 소개를 포트폴리오 요약으로 통합
+let portfolio = pitches | reduce(summary, pitch):
+  session "이 소개를 포트폴리오 요약에 통합하여 일관성을 유지하세요."
+    context: [summary, pitch]
+
+# 최종 포트폴리오 제시
+session "스타트업 포트폴리오를 세련된 문서로 서식을 지정하고 제시하세요."
+  context: portfolio
+
+# 병렬 맵 예제 - 여러 주제를 동시에 연구
+let topics = ["시장 분석", "경쟁", "자금 조달 옵션"]
+
+let research = topics | pmap:
+  session "스타트업 포트폴리오의 이 측면을 조사하세요."
+    context: item
+
+# 최종 종합
+session "모든 연구 결과를 통합하여 경영진 요약 보고서를 작성하세요."
+  context: research

@@ -1,0 +1,218 @@
+# 선장의 의자(The Captain's Chair)
+#
+# 주요 에이전트(선장)가 모든 코딩, 검증, 작업 실행을 위해
+# 전문화된 하위 에이전트를 파견하는 프로젝트 관리 오케스트레이션 패턴입니다.
+# 선장은 절대 직접 코드를 작성하지 않으며, 오직 조정, 검증,
+# 전략적 감독만 유지합니다.
+#
+# 주요 원칙:
+# - 컨텍스트 격리: 하위 에이전트는 모든 것이 아닌 대상 컨텍스트만 받습니다.
+# - 병렬 실행: 가능한 경우 여러 하위 에이전트가 동시에 작업합니다.
+# - 비평가(Critic) 에이전트: 계획 및 출력에 대한 지속적인 검토
+# - 체크포인트 검증: 주요 결정 시점에서의 사용자 승인
+
+input task: "구현할 기능 또는 작업"
+input codebase_context: "코드베이스 및 관련 파일에 대한 간략한 설명"
+
+# ============================================================================
+# 에이전트 정의: 승무원(The Crew)
+# ============================================================================
+
+# 선장(The Captain): 지휘하지만 코딩은 하지 않음
+agent captain:
+  model: opus
+  prompt: """당신은 수석 엔지니어링 매니저입니다. 당신은 절대 직접 코드를 작성하지 않습니다.
+당신의 업무는 다음과 같습니다:
+- 복잡한 작업을 개별 작업 항목으로 분할
+- 적절한 전문가에게 작업 배정
+- 결과물이 요구사항을 충족하는지 검증
+- 사용자 의도와의 전략적 연계 유지
+- 차단 요소를 식별하고 결정을 사용자에게 에스컬레이션
+
+항상 다음을 생각하세요: 각 하위 에이전트에게 어떤 컨텍스트가 필요한가? 무엇을 병렬로 실행할 수 있는가?
+진행하기 전에 어떤 인간 검증이 필요한가?"""
+
+# 연구 에이전트 - 빠르고 집중적인 정보 수집
+agent researcher:
+  model: haiku
+  prompt: """당신은 연구 전문가입니다. 특정 정보를 빠르게 찾으세요.
+간결하고 실행 가능한 결과를 제공하세요. 파일 경로와 줄 번호를 인용하세요."""
+
+# 코딩 에이전트 - 구현 전문가
+agent coder:
+  model: sonnet
+  prompt: """당신은 숙련된 소프트웨어 엔지니어입니다. 깔끔하고 관용적인 코드를 작성하세요.
+코드베이스의 기존 패턴을 따르세요. 과도한 엔지니어링은 하지 마세요."""
+
+# 비평가 에이전트 - 지속적인 품질 검토
+agent critic:
+  model: sonnet
+  prompt: """당신은 수석 코드 리뷰어이자 아키텍트입니다. 당신의 업무는 다음을 찾는 것입니다:
+- 논리적 오류 및 엣지 케이스
+- 보안 취약점
+- 성능 문제
+- 모범 사례에서의 이탈
+- 불필요한 복잡성
+건설적이지만 철저하게 하세요. 심각도에 따라 문제의 우선순위를 정하세요."""
+
+# 테스트 에이전트 - 검증 전문가
+agent tester:
+  model: sonnet
+  prompt: """당신은 QA 엔지니어입니다. 포괄적인 테스트를 작성하세요.
+엣지 케이스와 실패 모드에 집중하세요. 테스트 격리를 보장하세요."""
+
+# ============================================================================
+# 블록 정의: 재사용 가능한 연산
+# ============================================================================
+
+# 병렬 연구 스윕 - 모든 컨텍스트를 동시에 수집
+block research-sweep(topic):
+  parallel (on-fail: "continue"):
+    docs = session: researcher
+      prompt: "다음과 관련된 문서 및 README 파일을 찾으세요: {topic}"
+    code = session: researcher
+      prompt: "다음과 관련된 기존 코드 패턴 및 구현을 찾으세요: {topic}"
+    tests = session: researcher
+      prompt: "다음과 유사한 기능을 다루는 기존 테스트를 찾으세요: {topic}"
+    issues = session: researcher
+      prompt: "다음과 관련된 이슈, TODO 또는 알려진 제한 사항을 검색하세요: {topic}"
+
+# 병렬 코드 리뷰 - 여러 관점에서 동시에
+block review-cycle(code_changes):
+  parallel:
+    security = session: critic
+      prompt: "보안 취약점 및 인젝션 위험을 리뷰하세요"
+      context: code_changes
+    correctness = session: critic
+      prompt: "논리적 오류, 엣지 케이스, 정확성을 리뷰하세요"
+      context: code_changes
+    style = session: critic
+      prompt: "코드 스타일, 가독성, 유지보수성을 리뷰하세요"
+      context: code_changes
+    perf = session: critic
+      prompt: "성능 문제 및 최적화 기회를 리뷰하세요"
+      context: code_changes
+
+# 비평가가 내장된 구현 사이클
+block implement-with-review(implementation_plan):
+  let code = session: coder
+    prompt: "계획에 따라 구현하세요"
+    context: implementation_plan
+
+  let review = do review-cycle(code)
+
+  if **리뷰에서 치명적인 문제가 발견되었습니다**:
+    let fixed = session: coder
+      prompt: "리뷰에서 식별된 치명적인 문제를 해결하세요"
+      context: { code, review }
+    output result = fixed
+  else:
+    output result = code
+
+# ============================================================================
+# 메인 워크플로우: 작동 중인 선장의 의자
+# ============================================================================
+
+# 1단계: 전략적 계획
+# ---------------------------
+# 선장이 작업을 분할하고 필요한 정보를 식별합니다
+
+let breakdown = session: captain
+  prompt: """이 작업을 분석하고 전략적 계획을 수립하세요:
+
+작업: {task}
+코드베이스: {codebase_context}
+
+출력:
+1. 개별 작업 항목 목록 (작성/변경해야 할 코드)
+2. 작업 항목 간의 의존성 (무엇이 먼저 완료되어야 하는지)
+3. 병렬화할 수 있는 것
+4. 진행하기 전에 사용자 입력이 필요한 주요 질문
+5. 위험 및 잠재적 차단 요소"""
+
+# 2단계: 병렬 연구 스윕
+# --------------------------------
+# 연구원들을 파견하여 필요한 모든 컨텍스트를 동시에 수집합니다
+
+do research-sweep(task)
+
+# 3단계: 계획 종합 및 비평가 리뷰
+# -----------------------------------------
+# 선장이 연구 내용을 구현 계획으로 종합하고, 비평가가 이를 검토합니다
+
+let implementation_plan = session: captain
+  prompt: """연구 내용을 상세 구현 계획으로 종합하세요.
+
+연구 결과:
+{docs}
+{code}
+{tests}
+{issues}
+
+각 작업 항목에 대해 명시하세요:
+- 수정할 정확한 파일
+- 따라야 할 코드 패턴
+- 추가하거나 업데이트할 테스트
+- 통합 지점"""
+  context: { breakdown, docs, code, tests, issues }
+
+# 구현 시작 전 비평가가 계획을 검토합니다
+let plan_review = session: critic
+  prompt: """이 구현 계획을 다음 관점에서 검토하세요:
+- 누락된 엣지 케이스
+- 아키텍처 우려 사항
+- 테스트 가능성 문제
+- 범위 확장(Scope creep)
+- 사용자 명확화가 필요한 불분명한 요구사항"""
+  context: implementation_plan
+
+# 체크포인트: 실행 전 사용자 계획 검증
+if **계획 리뷰에서 치명적인 우려 사항이 제기되었습니다**:
+  let revised_plan = session: captain
+    prompt: "비평가 피드백을 바탕으로 계획을 수정하세요"
+    context: { implementation_plan, plan_review }
+  # 수정된 계획으로 진행
+  let final_plan = revised_plan
+else:
+  let final_plan = implementation_plan
+
+# 4단계: 병렬 구현
+# --------------------------------
+# 독립적인 작업 항목을 식별하고 가능한 경우 병렬로 실행합니다
+
+let work_items = session: captain
+  prompt: "이 계획에서 병렬로 수행할 수 있는 독립적인 작업 항목을 추출하세요"
+  context: final_plan
+
+# 독립적인 항목을 병렬로 실행하며, 각자 리뷰 사이클을 가짐
+parallel (on-fail: "continue"):
+  impl_a = do implement-with-review(work_items)
+  impl_b = session: tester
+    prompt: "계획된 기능을 위한 테스트를 작성하세요"
+    context: { final_plan, code }
+
+# 5단계: 통합 및 최종 리뷰
+# -------------------------------------
+# 선장이 모든 조각이 함께 맞는지 검증합니다
+
+let integration = session: captain
+  prompt: """모든 구현 결과를 검토하고 다음을 확인하세요:
+1. 모든 작업 항목이 성공적으로 완료됨
+2. 테스트가 새 기능을 커버함
+3. 병합 충돌이나 통합 문제 없음
+4. 필요한 경우 문서 업데이트됨
+
+수행된 작업과 남은 항목을 요약하세요."""
+  context: { impl_a, impl_b, final_plan }
+
+# 완료된 구현에 대한 최종 비평가 패스
+let final_review = do review-cycle(integration)
+
+if **최종 리뷰 통과**:
+  output result = session: captain
+    prompt: "사용자를 위한 최종 요약 준비: 구현된 기능, 추가된 테스트, 다음 단계"
+    context: { integration, final_review }
+else:
+  output result = session: captain
+    prompt: "완료된 내용과 사용자 주의가 필요한 남은 문제를 요약하세요"
+    context: { integration, final_review }

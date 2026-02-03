@@ -1,0 +1,19 @@
+# 병렬 코드 리뷰
+# 여러 전문화된 리뷰를 동시에 실행
+
+agent reviewer:
+  model: sonnet
+  prompt: "당신은 전문가 코드 리뷰어입니다."
+
+# 모든 리뷰를 병렬로 실행
+parallel:
+  security = session: reviewer
+    prompt: "보안 취약점을 리뷰하세요."
+  perf = session: reviewer
+    prompt: "성능 문제를 리뷰하세요."
+  style = session: reviewer
+    prompt: "코드 스타일과 가독성을 리뷰하세요."
+
+# 모든 리뷰 결과 종합
+session "통합 코드 리뷰 보고서 작성"
+  context: { security, perf, style }

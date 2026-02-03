@@ -1,0 +1,70 @@
+# 고급 병렬 실행 (티어 7)
+#
+# 병렬 블록을 위한 조인(join) 전략과 실패 정책을 보여줍니다.
+
+agent researcher:
+  model: haiku
+  prompt: "당신은 연구 보조원입니다. 간결한 정보를 제공하세요."
+
+# 1. 경쟁 패턴: 먼저 완료되는 것이 승리
+# ----------------------------------------
+# 가장 빠른 결과만 필요하고 모든 분기가 완료될 필요가 없을 때
+# parallel("first")를 사용하세요.
+
+parallel ("first"):
+  session: researcher
+    prompt: "접근법 A를 통해 정보 찾기"
+  session: researcher
+    prompt: "접근법 B를 통해 정보 찾기"
+  session: researcher
+    prompt: "접근법 C를 통해 정보 찾기"
+
+session "요약: 가장 빠른 접근법만 완료됨"
+
+# 2. Any-N 패턴: 여러 개의 빠른 결과 얻기
+# --------------------------------------------
+# N개의 결과가 필요하지만 반드시 모두 필요하지는 않을 때
+# parallel("any", count: N)을 사용하세요.
+
+parallel ("any", count: 2):
+  a = session "기술 블로그를 위한 창의적인 헤드라인 생성"
+  b = session "기술 블로그를 위한 시선을 끄는 헤드라인 생성"
+  c = session "기술 블로그를 위한 매력적인 헤드라인 생성"
+  d = session "기술 블로그를 위한 바이럴 헤드라인 생성"
+
+session "먼저 완료된 2개의 헤드라인 중 가장 좋은 것 선택"
+  context: { a, b, c, d }
+
+# 3. 실패 시 계속: 모든 결과 수집
+# ------------------------------------------
+# 모든 분기가 완료되기를 원하고 나중에 실패를 처리하려면
+# on-fail: "continue"를 사용하세요.
+
+parallel (on-fail: "continue"):
+  session "기본 API에서 데이터 가져오기"
+  session "보조 API에서 데이터 가져오기"
+  session "백업 API에서 데이터 가져오기"
+
+session "실패를 기록하고 사용 가능한 모든 데이터 결합"
+
+# 4. 실패 무시: 최선 노력 강화 (Best-Effort Enrichment)
+# ------------------------------------------
+# 실패가 진행을 막지 않아야 하는 선택적 강화 작업에는
+# on-fail: "ignore"를 사용하세요.
+
+parallel (on-fail: "ignore"):
+  session "선택적 메타데이터 강화 1 가져오기"
+  session "선택적 메타데이터 강화 2 가져오기"
+  session "선택적 메타데이터 강화 3 가져오기"
+
+session "성공한 강화 작업으로 계속 진행"
+
+# 5. 복합: 회복 탄력성이 있는 경쟁
+# ---------------------------------
+# 조인 전략과 실패 정책 결합
+
+parallel ("first", on-fail: "continue"):
+  session "빠르지만 실패할 수 있음"
+  session "느리지만 안정적임"
+
+session "처리된 실패였더라도 첫 번째 결과를 얻음"

@@ -1,0 +1,32 @@
+# 에이전트를 활용한 코드 리뷰 워크플로우
+# 이 예제는 다단계 코드 리뷰 프로세스를 위해 에이전트를 사용하는 방법을 보여줍니다.
+
+# 특정 역할을 가진 에이전트 정의
+agent security-reviewer:
+  model: opus
+  prompt: "당신은 취약점을 식별하는 데 초점을 맞춘 보안 전문가입니다."
+
+agent performance-reviewer:
+  model: sonnet
+  prompt: "당신은 성능 최적화 전문가입니다."
+
+agent style-reviewer:
+  model: haiku
+  prompt: "당신은 코드 스타일과 모범 사례를 확인합니다."
+
+# 1단계: 빠른 스타일 확인 (빠름)
+session: style-reviewer
+  prompt: "src/ 내의 코드를 스타일 문제와 네이밍 규칙 위주로 리뷰하세요."
+
+# 2단계: 성능 분석 (중간)
+session: performance-reviewer
+  prompt: "성능 병목 현상이나 최적화 기회를 식별하세요."
+
+# 3단계: 보안 감사 (철저함)
+session: security-reviewer
+  prompt: "OWASP Top 10 취약점을 찾아 보안 리뷰를 수행하세요."
+
+# 4단계: 요약
+session: security-reviewer
+  model: sonnet
+  prompt: "모든 리뷰 결과를 통합하여 우선순위 등급이 포함된 통합 보고서를 작성하세요."

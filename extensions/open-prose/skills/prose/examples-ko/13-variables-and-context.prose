@@ -1,0 +1,51 @@
+# 예제 13: 변수 및 컨텍스트
+#
+# let/const 바인딩을 사용하여 세션 출력을 캡처하고
+# 후속 세션의 컨텍스트로 전달하는 방법을 보여줍니다.
+
+# 워크플로우를 위한 전문화된 에이전트 정의
+agent researcher:
+  model: sonnet
+  prompt: "당신은 주제에 대해 포괄적인 정보를 수집하는 철저한 연구 보조원입니다."
+
+agent analyst:
+  model: opus
+  prompt: "당신은 패턴, 트렌드, 주요 통찰력을 식별하는 데이터 분석가입니다."
+
+agent writer:
+  model: opus
+  prompt: "당신은 명확하고 잘 구조화된 문서를 작성하는 기술 작가입니다."
+
+# 1단계: 초기 연구 수집 (변수에 캡처)
+let research = session: researcher
+  prompt: "양자 컴퓨팅의 현황을 조사하세요. 최근의 돌파구, 주요 플레이어, 잠재적 응용 분야를 포함하세요."
+
+# 2단계: 연구 결과 분석 (연구 내용을 컨텍스트로 사용)
+let analysis = session: analyst
+  prompt: "주요 결과를 분석하고 가장 유망한 방향을 식별하세요."
+  context: research
+
+# 3단계: 추가적인 관점 확보 (컨텍스트 새로 고침)
+let market-trends = session: researcher
+  prompt: "양자 컴퓨팅의 시장 트렌드와 상업적 응용 분야를 조사하세요."
+  context: []
+
+# 4단계: 최종 종합을 위해 여러 컨텍스트 결합
+const report = session: writer
+  prompt: "연구, 분석, 시장 트렌드를 다루는 포괄적인 경영진 요약 보고서를 작성하세요."
+  context: [research, analysis, market-trends]
+
+# 5단계: 변수 재할당을 통한 반복적인 개선
+let draft = session: writer
+  prompt: "기술 심층 분석 섹션의 초기 초안을 작성하세요."
+  context: research
+
+# 자신의 출력을 컨텍스트로 사용하여 초안 개선
+draft = session: writer
+  prompt: "명확성과 기술적 정확성을 위해 이 초안을 검토하고 개선하세요."
+  context: draft
+
+# 최종 마무리
+draft = session: writer
+  prompt: "최종 편집 검토를 수행하고 문서를 다듬으세요."
+  context: draft

@@ -1,0 +1,86 @@
+# 선택 블록(Choice Blocks) 예제
+# 런타임 기준에 따른 AI 선택 분기를 보여줍니다.
+
+# 분석에 따른 단순 선택
+let analysis = session "현재 코드베이스 품질 분석"
+
+choice **발견된 문제의 심각도**:
+  option "치명적(Critical)":
+    session "모든 작업을 중단하고 치명적인 문제를 즉시 수정"
+      context: analysis
+    session "사건 보고서 작성"
+  option "중간(Moderate)":
+    session "다음 스프린트에 수정 일정 잡기"
+      context: analysis
+  option "경미함(Minor)":
+    session "기술 부채 백로그에 추가"
+      context: analysis
+
+# 사용자 경험 수준에 따른 선택
+choice **질문에 따른 사용자의 기술적 전문성**:
+  option "초보자(Beginner)":
+    session "기본 원리부터 개념 설명"
+    session "단계별 튜토리얼 제공"
+    session "도움이 되는 비유 포함"
+  option "중급자(Intermediate)":
+    session "예제와 함께 간결한 설명 제공"
+    session "관련 문서 링크 제공"
+  option "전문가(Expert)":
+    session "기술 심층 분석 제공"
+    session "고급 구성 옵션 포함"
+
+# 프로젝트 접근 방식에 따른 선택
+let requirements = session "프로젝트 요구사항 수집"
+
+choice **요구사항을 고려한 최선의 개발 접근 방식**:
+  option "빠른 프로토타입(Rapid prototype)":
+    session "핵심 기능에 집중하여 빠른 MVP 생성"
+      context: requirements
+    session "반복 주기 계획"
+  option "프로덕션 준비(Production-ready)":
+    session "완전한 아키텍처 설계"
+      context: requirements
+    session "CI/CD 파이프라인 설정"
+    session "완전한 테스트 커버리지로 구현"
+  option "연구 스파이크(Research spike)":
+    session "기술적 타당성 탐색"
+      context: requirements
+    session "결과 및 권장 사항 문서화"
+
+# 복잡한 결정을 위한 여러 줄 기준
+let market_data = session "시장 조사 데이터 수집"
+let tech_analysis = session "기술 환경 분석"
+
+choice ***
+  최적의 시장 진입 전략
+  시장 상황과
+  기술적 준비 상태 모두 고려
+***:
+  option "공격적 출시(Aggressive launch)":
+    session "즉각적인 시장 진입 준비"
+      context: [market_data, tech_analysis]
+  option "소프트 런칭(Soft launch)":
+    session "제한된 베타 릴리스 계획"
+      context: [market_data, tech_analysis]
+  option "대기 및 반복(Wait and iterate)":
+    session "개발 계속 및 시장 모니터링"
+      context: [market_data, tech_analysis]
+
+# 상세 의사결정 트리를 위한 중첩된 선택
+let request = session "들어오는 고객 요청 분석"
+
+choice **요청 유형**:
+  option "기술 지원(Technical support)":
+    choice **기술적 문제의 복잡성**:
+      option "단순함(Simple)":
+        session "셀프 서비스 솔루션 제공"
+          context: request
+      option "복잡함(Complex)":
+        session "수석 엔지니어에게 에스컬레이션"
+          context: request
+  option "영업 문의(Sales inquiry)":
+    session "컨텍스트와 함께 영업팀에 전달"
+      context: request
+  option "기능 요청(Feature request)":
+    session "제품 백로그에 추가하고 PM에게 알림"
+      context: request

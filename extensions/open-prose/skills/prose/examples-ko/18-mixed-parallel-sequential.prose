@@ -1,0 +1,36 @@
+# 혼합 병렬 및 순차 워크플로우
+# 병렬 및 순차 블록을 중첩하는 방법을 보여줍니다.
+
+agent worker:
+  model: sonnet
+
+# 재사용 가능한 블록 정의
+block setup:
+  session "리소스 초기화"
+  session "설정 검증"
+
+block cleanup:
+  session "결과 저장"
+  session "리소스 해제"
+
+# 혼합 구성을 사용한 메인 워크플로우
+do:
+  do setup
+
+  # 병렬 처리 단계
+  parallel:
+    # 각 병렬 분기는 여러 단계를 가질 수 있음
+    do:
+      session: worker
+        prompt: "배치 1 처리 - 1단계"
+      session: worker
+        prompt: "배치 1 처리 - 2단계"
+    do:
+      session: worker
+        prompt: "배치 2 처리 - 1단계"
+      session: worker
+        prompt: "배치 2 처리 - 2단계"
+
+  session "결과 집계"
+
+  do cleanup

@@ -1,0 +1,100 @@
+# 매개변수화된 블록(Parameterized Blocks) 예제
+# DRY(Don't Repeat Yourself) 워크플로우를 위한 인수가 있는 재사용 가능한 블록을 보여줍니다.
+
+# 단순 매개변수화된 블록
+block research(topic):
+  session "{topic}에 대해 철저히 조사하세요"
+  session "{topic}에 대한 주요 결과를 요약하세요"
+  session "{topic}에 대한 열린 질문을 나열하세요"
+
+# 다른 인수로 호출
+do research("양자 컴퓨팅")
+do research("머신 러닝")
+do research("블록체인 기술")
+
+# 여러 매개변수가 있는 블록
+block review_code(language, focus_area):
+  session "{focus_area} 문제에 대해 {language} 코드를 리뷰하세요"
+  session "{language}에 대한 {focus_area} 개선 사항을 제안하세요"
+  session "{focus_area}에 대한 {language} 모범 사례를 제공하세요"
+
+do review_code("Python", "성능")
+do review_code("TypeScript", "타입 안전성")
+do review_code("Rust", "메모리 안전성")
+
+# 데이터 처리를 위한 매개변수화된 블록
+block process_dataset(source, format):
+  session "{source}에서 데이터 로드"
+  session "{format} 구조 유효성 검사"
+  session "표준 형식으로 변환"
+  session "{source} 데이터에 대한 품질 보고서 생성"
+
+do process_dataset("sales_db", "CSV")
+do process_dataset("api_logs", "JSON")
+do process_dataset("user_events", "Parquet")
+
+# 제어 흐름에 매개변수가 사용된 블록
+block test_feature(feature_name, test_level):
+  session "{feature_name}에 대한 {test_level} 테스트 작성"
+
+  if **테스트에서 문제가 드러났습니다**:
+    session "{feature_name}의 문제 수정"
+    session "{feature_name}에 대해 {test_level} 테스트 다시 실행"
+  else:
+    session "{feature_name} {test_level} 테스트 완료 표시"
+
+do test_feature("인증", "단위")
+do test_feature("결제 처리", "통합")
+do test_feature("사용자 대시보드", "E2E")
+
+# 병렬 내의 매개변수화된 블록
+block analyze_competitor(company):
+  session "{company} 제품 조사"
+  session "{company} 시장 위치 분석"
+  session "{company} 강점과 약점 식별"
+
+parallel:
+  a = do analyze_competitor("회사 A")
+  b = do analyze_competitor("회사 B")
+  c = do analyze_competitor("회사 C")
+
+session "경쟁 분석 보고서 작성"
+  context: { a, b, c }
+
+# 에러 처리가 있는 블록
+block safe_api_call(endpoint, method):
+  try:
+    session "{method} 요청으로 {endpoint} 호출"
+      retry: 3
+      backoff: "exponential"
+  catch as err:
+    session "{endpoint}에 대한 실패한 {method} 호출 로그"
+      context: err
+    session "{endpoint}에 대한 대체 응답 반환"
+
+do safe_api_call("/users", "GET")
+do safe_api_call("/orders", "POST")
+do safe_api_call("/inventory", "PUT")
+
+# 중첩된 블록 호출
+block full_review(component):
+  do review_code("TypeScript", "보안")
+  do test_feature(component, "단위")
+  session "{component}에 대한 문서 생성"
+
+do full_review("UserService")
+do full_review("PaymentGateway")
+
+# 루프가 내부에 있는 블록
+block process_batch(batch_name, items):
+  session "{batch_name} 처리 시작"
+  for item in items:
+    session "{batch_name}의 항목 처리"
+      context: item
+  session "{batch_name} 처리 완료"
+
+let batch1 = ["a", "b", "c"]
+let batch2 = ["x", "y", "z"]
+
+do process_batch("알파", batch1)
+do process_batch("베타", batch2)

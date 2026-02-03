@@ -1,0 +1,43 @@
+# 권한이 있는 보안 에이전트 예제
+# 제한된 접근 권한을 가진 에이전트를 정의하는 방법을 보여줍니다.
+
+# 필요한 스킬 가져오기
+import "code-analyzer" from "github:anthropic/code-tools"
+
+# 읽기 전용 코드 리뷰어 정의
+# 이 에이전트는 소스 파일을 읽을 수 있지만 수정하거나 쉘 명령어를 실행할 수 없습니다.
+agent code-reviewer:
+  model: sonnet
+  prompt: "당신은 철저한 코드 리뷰어입니다."
+  skills: ["code-analyzer"]
+  permissions:
+    read: ["src/**/*.ts", "src/**/*.js", "*.md"]
+    write: []
+    bash: deny
+
+# 쓰기 접근이 제한된 문서 작성가 정의
+# docs 디렉토리에만 쓸 수 있습니다.
+agent doc-writer:
+  model: opus
+  prompt: "당신은 기술 문서를 작성합니다."
+  permissions:
+    read: ["src/**/*", "docs/**/*"]
+    write: ["docs/**/*.md"]
+    bash: deny
+
+# 전체 접근 권한을 가진 관리자 에이전트 정의
+agent admin:
+  model: opus
+  prompt: "당신은 관리 작업을 수행합니다."
+  permissions:
+    read: ["**/*"]
+    write: ["**/*"]
+    bash: prompt
+    network: allow
+
+# 워크플로우: 코드 리뷰 후 문서 업데이트
+session: code-reviewer
+  prompt: "보안 문제와 모범 사례를 중심으로 코드베이스를 리뷰하세요."
+
+session: doc-writer
+  prompt: "코드 리뷰 결과를 바탕으로 문서를 업데이트하세요."

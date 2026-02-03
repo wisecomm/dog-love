@@ -1,0 +1,105 @@
+# 문자열 보간(String Interpolation) 예제
+# {variable} 구문을 사용한 동적 프롬프트 구성을 보여줍니다.
+
+# 기본 보간
+let user_name = session "사용자의 이름 가져오기"
+let topic = session "배우고 싶은 주제 물어보기"
+
+session "{topic}에 대해 {user_name}을 위한 개인화된 인사말 작성"
+
+# 하나의 프롬프트에 여러 보간
+let company = session "회사 이름 가져오기"
+let industry = session "회사의 산업 분야 식별"
+let size = session "회사 규모 결정 (스타트업/중견기업/대기업)"
+
+session "{industry} 분야의 {size} 회사인 {company}를 위한 맞춤형 제안서 작성"
+
+# 컨텍스트와 함께 보간
+let research = session "주제에 대해 철저히 조사"
+
+session "연구를 바탕으로 {user_name}에게 {topic} 설명"
+  context: research
+
+# 보간이 있는 여러 줄 문자열
+let project = session "프로젝트 이름 가져오기"
+let deadline = session "프로젝트 마감일 가져오기"
+let team_size = session "팀 규모 가져오기"
+
+session """
+{project}를 위한 프로젝트 계획을 작성하세요.
+
+주요 제약 사항:
+- 마감일: {deadline}
+- 팀 규모: {team_size}
+
+마일스톤과 리소스 할당을 포함하세요.
+"""
+
+# 루프 내 보간
+let languages = ["Python", "JavaScript", "Go"]
+
+for lang in languages:
+  session "{lang}으로 헬로 월드 프로그램 작성"
+  session "{lang}의 구문 설명"
+
+# 병렬 블록 내 보간
+let regions = ["북미", "유럽", "아시아 태평양"]
+
+parallel for region in regions:
+  session "{region}의 시장 상황 분석"
+  session "{region}의 상위 경쟁자 식별"
+
+# 계산된 값과 함께 보간
+let base_topic = session "메인 주제 가져오기"
+let analysis = session "여러 각도에서 {base_topic} 분석"
+
+let subtopics = ["역사", "현재 상태", "미래 트렌드"]
+for subtopic in subtopics:
+  session "{base_topic}의 {subtopic} 탐구"
+    context: analysis
+
+# 동적 워크플로우 구축
+let workflow_type = session "어떤 유형의 문서를 생성해야 합니까?"
+let audience = session "타겟 독자는 누구입니까?"
+let length = session "문서의 길이는 얼마나 되어야 합니까?"
+
+session """
+{audience}를 위한 {workflow_type}를 생성하세요.
+
+요구사항:
+- 길이: 약 {length}
+- 어조: {audience}에게 적절함
+- 초점: 실용적이고 실행 가능함
+
+명확한 섹션으로 구조화해주세요.
+"""
+
+# 에러 메시지 내 보간
+let operation = session "작업 이름 가져오기"
+let target = session "대상 리소스 가져오기"
+
+try:
+  session "{target}에 대해 {operation} 수행"
+catch:
+  session "{target}에 대해 {operation} 실패 - 복구 시도 중"
+  throw "{target}에 대한 작업 {operation} 실패"
+
+# 선택 블록과 보간 결합
+let task_type = session "작업 유형 식별"
+let priority = session "작업 우선순위 결정"
+
+choice **{priority} 우선순위 {task_type}를 위한 최선의 접근 방식**:
+  option "즉각적인 조치":
+    session "{priority} 우선순위 처리로 {task_type} 즉시 실행"
+  option "예약된 조치":
+    session "{priority} 우선순위 큐에 따라 {task_type} 예약"
+  option "위임":
+    session "적절한 팀원에게 {task_type} 할당"
+
+# 에이전트 정의와 보간
+agent custom_agent:
+  model: sonnet
+  prompt: "당신은 {topic}에 대한 도움을 주는 전문가입니다."
+
+session: custom_agent
+  prompt: "{user_name}에게 {topic}에 대한 전문가 지도 제공"

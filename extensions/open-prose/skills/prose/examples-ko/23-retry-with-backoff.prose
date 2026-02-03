@@ -1,0 +1,63 @@
+# 백오프를 포함한 재시도 예제
+# 탄력적인 API 호출을 위한 자동 재시도 패턴을 보여줍니다.
+
+# 단순 재시도 - 실패 시 최대 3회 시도
+session "불안정한 타사 API 호출"
+  retry: 3
+
+# 속도 제한이 있는 API를 위한 지수 백오프 재시도
+session "속도 제한이 있는 서비스 쿼리"
+  retry: 5
+  backoff: "exponential"
+
+# 선형 백오프 재시도
+session "웹훅 알림 전송"
+  retry: 3
+  backoff: "linear"
+
+# 컨텍스트 전달과 재시도 결합
+let config = session "API 구성 로드"
+
+session "인증된 API 요청 만들기"
+  context: config
+  retry: 3
+  backoff: "exponential"
+
+# 모든 재시도가 실패한 후 대체를 위해 try/catch 내부에서 재시도
+try:
+  session "기본 결제 처리기 호출"
+    retry: 3
+    backoff: "exponential"
+catch:
+  session "모든 재시도 실패 - 백업 결제 처리기 사용"
+    retry: 2
+
+# 중복 서비스를 위한 병렬 재시도
+parallel:
+  primary = try:
+    session "기본 데이터베이스 쿼리"
+      retry: 2
+      backoff: "linear"
+  catch:
+    session "기본 DB 사용 불가"
+  replica = try:
+    session "복제 데이터베이스 쿼리"
+      retry: 2
+      backoff: "linear"
+  catch:
+    session "복제 DB 사용 불가"
+
+session "사용 가능한 데이터베이스의 결과 병합"
+  context: { primary, replica }
+
+# 배치 처리를 위한 루프 내 재시도
+let items = ["batch1", "batch2", "batch3"]
+for item in items:
+  try:
+    session "이 배치 항목 처리"
+      context: item
+      retry: 2
+      backoff: "exponential"
+  catch:
+    session "수동 검토를 위해 실패한 배치 기록"
+      context: item

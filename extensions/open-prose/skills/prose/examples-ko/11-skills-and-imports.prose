@@ -1,0 +1,27 @@
+# 스킬 및 가져오기 예제
+# 외부 스킬을 가져와 에이전트에게 할당하는 방법을 보여줍니다.
+
+# 외부 소스에서 스킬 가져오기
+import "web-search" from "github:anthropic/skills"
+import "summarizer" from "npm:@example/summarizer"
+import "file-reader" from "./local-skills/file-reader"
+
+# 웹 검색 기능이 있는 연구 에이전트 정의
+agent researcher:
+  model: sonnet
+  prompt: "당신은 정보 검색에 능숙한 연구 보조원입니다."
+  skills: ["web-search", "summarizer"]
+
+# 파일 접근 권한이 있는 문서화 에이전트 정의
+agent documenter:
+  model: opus
+  prompt: "당신은 포괄적인 문서를 작성합니다."
+  skills: ["file-reader", "summarizer"]
+
+# 연구 단계
+session: researcher
+  prompt: "재생 에너지 저장 분야의 최근 발전을 검색하세요."
+
+# 문서화 단계
+session: documenter
+  prompt: "연구 결과를 바탕으로 기술 요약 문서를 작성하세요."

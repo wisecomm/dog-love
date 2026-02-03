@@ -1,0 +1,51 @@
+# 에러 처리 예제
+# 탄력적인 워크플로우를 위한 try/catch/finally 패턴을 보여줍니다.
+
+# 에러 복구를 위한 기본 try/catch
+try:
+  session "외부 API에서 데이터 가져오기 시도"
+catch:
+  session "API 실패 - 대신 캐시된 데이터 사용"
+
+# 컨텍스트 인식 처리를 위한 에러 변수가 있는 Catch
+try:
+  session "복잡한 구성 파일 파싱 및 유효성 검사"
+catch as err:
+  session "구성 에러 처리"
+    context: err
+
+# 리소스 정리를 위한 Try/catch/finally
+try:
+  session "데이터베이스 연결 열기 및 쿼리 수행"
+catch:
+  session "데이터베이스 에러 기록 및 관리자에게 알림"
+finally:
+  session "데이터베이스 연결이 제대로 닫혔는지 확인"
+
+# 중첩된 에러 처리
+try:
+  session "외부 트랜잭션 시작"
+  try:
+    session "위험한 내부 작업 수행"
+  catch:
+    session "내부 작업 복구"
+    throw  # 외부 핸들러로 다시 발생시킴
+catch:
+  session "외부 수준에서 다시 발생된 에러 처리"
+
+# 병렬 블록 내의 에러 처리
+parallel:
+  try:
+    session "서비스 A - 실패할 수 있음"
+  catch:
+    session "서비스 A를 위한 대체 수단"
+  try:
+    session "서비스 B - 실패할 수 있음"
+  catch:
+    session "서비스 B를 위한 대체 수단"
+
+session "얻은 결과로 계속 진행"
+
+# 사용자 정의 에러 발생시키기
+session "입력 데이터 유효성 검사"
+throw "유효성 검사 실패: 필수 필드 누락"

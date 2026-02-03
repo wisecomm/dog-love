@@ -1,0 +1,114 @@
+# 조건문(Conditionals) 예제
+# AI가 평가하는 조건을 가진 if/elif/else 패턴을 보여줍니다.
+
+# 단순 if 문
+let health_check = session "시스템 상태 확인"
+
+if **시스템이 비정상 상태입니다**:
+  session "당직 엔지니어에게 알림"
+    context: health_check
+  session "사건 대응 시작"
+
+# 이진 결정을 위한 If/else
+let review = session "풀 리퀘스트 변경 사항 리뷰"
+
+if **코드 변경 사항이 안전하고 잘 테스트되었습니다**:
+  session "풀 리퀘스트 승인 및 병합"
+    context: review
+else:
+  session "상세한 피드백과 함께 변경 요청"
+    context: review
+
+# 여러 조건을 위한 If/elif/else
+let status = session "프로젝트 마일스톤 상태 확인"
+
+if **프로젝트가 일정보다 앞서 있습니다**:
+  session "성공 요인 문서화"
+    session "추가 목표(stretch goals) 추가 고려"
+elif **프로젝트가 궤도에 올라 있습니다**:
+  session "현재 계획대로 계속 진행"
+  session "상태 보고서 준비"
+elif **프로젝트가 약간 지연되었습니다**:
+  session "병목 현상 식별"
+  session "일정 조정 및 이해관계자에게 소통"
+else:
+  session "경영진에게 에스컬레이션"
+  session "복구 계획 수립"
+  session "일일 스탠드업 일정 잡기"
+
+# 여러 줄 조건
+let test_results = session "전체 테스트 스위트 실행"
+
+if ***
+  모든 테스트가 통과하고
+  코드 커버리지가 80% 이상이며
+  린팅 에러가 없음
+***:
+  session "프로덕션에 배포"
+else:
+  session "배포 전 문제 수정"
+    context: test_results
+
+# 중첩된 조건문
+let request = session "API 요청 분석"
+
+if **요청이 인증되었습니다**:
+  if **사용자에게 관리자 권한이 있습니다**:
+    session "전체 권한으로 관리자 요청 처리"
+      context: request
+  else:
+    session "일반 사용자 요청 처리"
+      context: request
+else:
+  session "401 인증 에러 반환"
+
+# 에러 처리가 있는 조건문
+let operation_result = session "복잡한 작업 시도"
+
+if **작업이 부분적으로 성공했습니다**:
+  session "남은 단계 완료"
+    context: operation_result
+
+try:
+  session "다른 위험한 작업 수행"
+catch as err:
+  if **에러가 복구 가능합니다**:
+    session "자동 복구 절차 적용"
+      context: err
+  else:
+    throw "복구 불가능한 에러 발생"
+
+# 루프 내 조건문
+let items = ["item1", "item2", "item3"]
+
+for item in items:
+  session "이 항목 분석"
+    context: item
+
+  if **항목 처리가 필요합니다**:
+    session "항목 처리"
+      context: item
+  elif **항목을 건너뛰어야 합니다**:
+    session "건너뜀 사유 로그"
+      context: item
+  else:
+    session "항목 보관"
+      context: item
+
+# 병렬 블록이 있는 조건문
+parallel:
+  security = session "보안 스캔 실행"
+  performance = session "성능 테스트 실행"
+  style = session "스타일 확인 실행"
+
+if **보안 문제가 발견되었습니다**:
+  session "보안 문제 즉시 수정"
+    context: security
+elif **성능 문제가 발견되었습니다**:
+  session "성능 병목 현상 최적화"
+    context: performance
+elif **스타일 문제가 발견되었습니다**:
+  session "코드 스타일 정리"
+    context: style
+else:
+  session "모든 확인 통과 - 리뷰 준비 완료"

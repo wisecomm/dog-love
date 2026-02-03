@@ -1,0 +1,20 @@
+# 예제: OpenProse의 고정 루프
+# repeat, for-each, parallel for-each 패턴을 보여줍니다.
+
+# 반복 블록(Repeat block) - 여러 아이디어 생성
+repeat 3:
+  session "창의적인 앱 아이디어 생성"
+
+# For-each 블록 - 컬렉션 반복
+let features = ["authentication", "dashboard", "notifications"]
+for feature in features:
+  session "이 기능에 대한 사용자 인터페이스 설계"
+    context: feature
+
+# 병렬 for-each - 병렬 연구
+let topics = ["market size", "competitors", "technology stack"]
+parallel for topic in topics:
+  session "스타트업 아이디어의 이 측면 조사"
+    context: topic
+
+session "모든 연구를 사업 계획으로 종합"

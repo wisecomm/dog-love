@@ -1,0 +1,23 @@
+# 예제 15: 인라인 시퀀스
+# 세션을 체이닝하기 위한 -> 연산자를 보여줍니다.
+
+# 화살표 구문을 사용한 빠른 파이프라인
+session "작업 계획 수립" -> session "계획 실행" -> session "결과 검토"
+
+# 컨텍스트 캡처가 있는 인라인 시퀀스
+let analysis = session "데이터 분석" -> session "결론 도출"
+
+session "보고서 작성"
+  context: analysis
+
+# 블록과 인라인 시퀀스 결합
+block quick-check:
+  session "보안 스캔" -> session "성능 확인"
+
+do quick-check
+
+# 변수 할당에 인라인 시퀀스 사용
+let workflow = session "1단계" -> session "2단계" -> session "3단계"
+
+session "최종 단계"
+  context: workflow
