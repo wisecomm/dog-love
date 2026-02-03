@@ -44,10 +44,10 @@ pnpm validate       # 전체 검증 (lint + typecheck + test + build)
 
 ## 커밋 규칙
 
-- **커밋 시 `scripts/committer.sh` 사용을 권장** (스코프 제한 커밋):
+- **커밋 시 `frontend/scripts/committer.sh` 사용을 권장** (스코프 제한 커밋):
 
 ```bash
-./scripts/committer.sh "feat: add login page" app/login/page.tsx lib/auth.ts hooks/use-auth.ts
+./frontend/scripts/committer.sh "feat: add login page" app/login/page.tsx lib/auth.ts hooks/use-auth.ts
 ```
 
 - committer가 자동으로 수행하는 것:
