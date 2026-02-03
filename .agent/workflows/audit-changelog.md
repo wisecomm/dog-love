@@ -14,9 +14,7 @@ description: Audit changelog entries before release
    ```
 
 3. **Read each package's [Unreleased] section**
-   - packages/ai/CHANGELOG.md
-   - packages/tui/CHANGELOG.md
-   - packages/coding-agent/CHANGELOG.md
+   - CHANGELOG.md
 
 4. **Audit Commits**
    - Unreleased changes should have corresponding entries.
