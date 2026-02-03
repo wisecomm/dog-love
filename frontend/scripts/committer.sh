@@ -77,24 +77,33 @@ echo ""
 git add "${FILES[@]}"
 
 # --- validate 실행 ---
-echo -e "${YELLOW}검증 실행 중... (pnpm lint && pnpm typecheck && pnpm test)${NC}"
+echo -e "${YELLOW}검증 실행 중... (frontend: pnpm lint && pnpm typecheck && pnpm test)${NC}"
+
+# 프론트엔드 검증을 위해 디렉토리 이동
+pushd frontend > /dev/null
+
 if ! pnpm lint; then
   echo -e "${RED}lint 실패 — 스테이징 해제${NC}"
+  popd > /dev/null
   git reset HEAD "${FILES[@]}" > /dev/null 2>&1
   exit 1
 fi
 
 if ! pnpm typecheck; then
   echo -e "${RED}typecheck 실패 — 스테이징 해제${NC}"
+  popd > /dev/null
   git reset HEAD "${FILES[@]}" > /dev/null 2>&1
   exit 1
 fi
 
 if ! pnpm test; then
   echo -e "${RED}test 실패 — 스테이징 해제${NC}"
+  popd > /dev/null
   git reset HEAD "${FILES[@]}" > /dev/null 2>&1
   exit 1
 fi
+
+popd > /dev/null
 
 # --- 커밋 ---
 echo ""
