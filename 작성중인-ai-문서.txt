@@ -1,0 +1,11 @@
+
+
+# 일반적인 규칙정리 ??? backend/SKILL.md 확인 필요
+/Users/danyoh/XXX-VIBE/dog-love/.agent/skills/frontend-guidelines/SKILL.md
+
+# 새로운 기능 추가 : test-unit 
+/Users/danyoh/XXX-VIBE/dog-love/frontend/.agent/workflows/new-feature.md
+
+# 테스트 ( frontend/backend 같이 사용)
+/Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-unit.md
+/Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-e2e.md

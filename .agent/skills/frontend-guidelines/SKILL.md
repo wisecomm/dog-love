@@ -29,51 +29,25 @@ pnpm test:e2e       # Playwright E2E 테스트
 pnpm validate       # 전체 검증 (lint + typecheck + test + build)
 ```
 
-## 코드 수정 후 필수 검증 절차
-
-코드를 수정한 후 반드시 다음 순서로 검증할 것:
-
-1. `pnpm lint` — ESLint 통과 확인
-2. `pnpm typecheck` — 타입 에러 없음 확인
-3. `pnpm test` — 유닛 테스트 통과 확인
-4. `pnpm build` — 빌드 성공 확인
-
-실패 시 스스로 수정하고 다시 검증할 것. 모든 검증을 통과할 때까지 반복.
-
-한 번에 실행: `pnpm validate`
-
 ## 커밋 규칙
 
-- **커밋 시 해당 스크립트 사용 권장** (스코프 제한 커밋):
+- **Conventional Commits** 권장:
+  - `feat`: 새로운 기능
+  - `fix`: 버그 수정
+  - `refactor`: 리팩토링
+  - `style`: 스타일/포맷 변경
+  - `docs`: 문서
+  - `chore`: 설정 및 기타
 
-```bash
-./frontend/scripts/committer.sh "feat: add login page" app/login/page.tsx lib/auth.ts
-```
-
-- committer가 자동으로 수행하는 것:
-  1. conventional commit 메시지 형식 검증
-  2. 지정 파일만 스테이징 (다른 파일 보호)
-  3. lint + typecheck + test 검증
-  4. 실패 시 스테이징 해제, 통과 시에만 커밋
-
-- 커밋 메시지는 conventional commits 형식 사용:
-  - `feat:` 새 기능
-  - `fix:` 버그 수정
-  - `refactor:` 리팩토링
-  - `style:` 포맷/스타일 변경
-  - `docs:` 문서 변경
-  - `test:` 테스트 추가/수정
-  - `chore:` 기타
 
 ## 코딩 컨벤션
 
 - 컴포넌트: `PascalCase` named export (`export function MyComponent`)
 - 유틸/훅: `camelCase` named export
 - Named Export만 사용 (default export 금지) — tree-shaking 및 일관성
-- 파일명: `kebab-case.tsx`
+- Name (kebab-case)
 - Path alias: `@/*` (프로젝트 루트)
 - UI 컴포넌트: `components/ui/` (shadcn/ui)
-- API 클라이언트: `lib/api/`
 - 전역 상태: `store/`
 - React Query 훅: `hooks/query/`
 - **`any` 사용 금지** — 반드시 `unknown` + 타입 가드 사용
@@ -134,7 +108,7 @@ app/
 ├── (auth)/              # 인증 라우트 그룹
 │   ├── login/page.tsx
 │   └── register/page.tsx
-├── (main)/              # 메인 앱 라우트 그룹 (보호됨)
+├── (admin)/              # 메인 앱 라우트 그룹 (보호됨)
 │   ├── layout.tsx       # Layout with Header, Sidebar
 │   ├── dashboard/page.tsx
 │   └── users/
@@ -164,27 +138,9 @@ tests/ & playwright/     # 테스트 설정
 ## 주의사항
 
 - `"use client"` 디렉티브: 클라이언트 컴포넌트에만 사용
-- 환경변수: `lib/env.ts`에서 Zod로 검증된 값 사용
-- API 호출: `lib/api/api-client.ts`의 Axios 인스턴스 사용
 - 불필요한 코드, 주석, docstring 추가 금지
 - 보안 취약점 (XSS, injection 등) 주의
 - Early return 패턴 사용 — 에러 조건을 먼저 처리
 - Guard clause로 사전 조건 검증
 - ErrorBoundary로 앱 전체 에러 래핑
 
-## 테스트 가이드
-
-- 프레임워크: vitest + @testing-library/react
-- 테스트 파일: 소스 파일 옆에 `*.test.ts` 또는 `*.test.tsx`
-- 커버리지 임계값: 70% (lines/branches/functions/statements)
-- 코드 수정 시 관련 테스트도 함께 작성/수정할 것
-- 테스트 설명은 한국어로 작성
-
-## 에이전트 워크플로우 (.agent/workflows/)
-
-복잡한 작업은 해당 워크플로우를 따라 단계별로 수행할 것. 각 단계의 검증을 통과해야 다음 단계로 진행.
-
-- `.agent/workflows/deploy.md` — 배포 (사전 검증 → 환경별 빌드 → 결과 검증 → 배포)
-- `.agent/workflows/new-feature.md` — 신규 기능 (설계 → 타입 → API → 컴포넌트 → 테스트 → 검증)
-- `.agent/workflows/bug-fix.md` — 버그 수정 (재현 → 원인 분석 → 최소 수정 → 회귀 테스트 → 검증)
-- `.agent/workflows/refactor.md` — 리팩토링 (범위 정의 → 기존 테스트 확인 → 단계별 수정 → 검증)

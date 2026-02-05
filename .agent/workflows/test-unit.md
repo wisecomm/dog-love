@@ -1,5 +1,5 @@
 ---
-description: Generate comprehensive unit tests for Frontend (Vitest) and Backend (JUnit 5). 
+description: Generate comprehensive unit tests for Frontend (Vitest) and Backend (JUnit 5).
 ---
 
 # Unit Test Workflow
@@ -15,6 +15,9 @@ Example: `/test-unit backend/src/main/java/com/example/service/UserService.java`
 **Step 0: Detect Type**
 - If file extension is `.ts` or `.tsx`: **Frontend Mode**
 - If file extension is `.java`: **Backend Mode**
+- 테스트 파일: 소스 파일 옆에 `*.test.ts` 또는 `*.test.tsx`
+- 코드 수정 시 관련 테스트도 함께 작성/수정할 것
+- 테스트 설명은 한국어로 작성
 
 ---
 

@@ -87,8 +87,6 @@ class AuthControllerTest {
                                 .content(objectMapper.writeValueAsString(request)))
                                 .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                                 .andExpect(status().isOk())
-                                .andExpect(result -> System.out
-                                                .println("Response: " + result.getResponse().getContentAsString()))
                                 .andExpect(jsonPath("$.code").value("200"))
                                 .andExpect(jsonPath("$.data.token").value("accessToken"));
         }
@@ -106,9 +104,6 @@ class AuthControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                                 .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
-                                .andExpect(result -> System.out
-                                                .println("Validation Response: "
-                                                                + result.getResponse().getContentAsString()))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.code").value("400")); // Or 400 based on validation handler
         }

@@ -1,17 +1,20 @@
 
 
 # ap 추가 시 ( LAUDE.md 참조 --> .agent/skills/core-guidelines/SKILL.md)
-anti 호출시 : SKILL.md 규칙에 따른 절차(스크립트 기반 커밋)
-예: "로그인 페이지 만들어줘. 완료되면 커밋하고 push까지 해줘"   
+anti 호출시 : frontend-guidelines/SKILL.md 규칙에 따른 절차(스크립트 기반 커밋)
+anti 호출시 : backend-guidelines/SKILL.md 규칙에 따른 절차(스크립트 기반 커밋)
 
-사용해보자.txt 에서 워크플로우 사용해보기
-
-
-???  extensions/open-responses 문서확인 필요
-    1. **시작**: "먼저 계획을 세워줘" 또는 "implementation plan 작성해줘"
-       <!-- Cursor 전용: Shift+Tab 2번으로 Plan Mode 진입 가능 -->
+예: "로그인 페이지 만들어줘. 완료되면 frontend-guidelines/SKILL.md 규칙에 따라 커밋하고 push까지 해줘"   
 
 
+# 사용해보자.txt 에서 워크플로우 사용해보기
+
+
+# 아래거 한번더 테스트 해보자 
+- `.agent/workflows/deploy.md` — 배포 (사전 검증 → 환경별 빌드 → 결과 검증 → 배포)
+- `.agent/workflows/new-feature.md` — 신규 기능 (설계 → 타입 → API → 컴포넌트 → 테스트 → 검증)
+- `.agent/workflows/bug-fix.md` — 버그 수정 (재현 → 원인 분석 → 최소 수정 → 회귀 테스트 → 검증)
+- `.agent/workflows/refactor.md` — 리팩토링 (범위 정의 → 기존 테스트 확인 → 단계별 수정 → 검증)
 
 ### 프로젝트 초기 작업 후 
 .env.local 파일을 생성
