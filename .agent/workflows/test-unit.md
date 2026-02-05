@@ -1,52 +1,67 @@
----
-description: Generate Vitest unit tests for a specific component, hook, or utility.
----
+# Unit Test Workflow
 
-# Generate Unit Test Workflow
-
-This workflow guides the AI to generate comprehensive unit tests using internal `vi.fn()`, `@testing-library/react`, and `renderHook`.
+This workflow guides the AI to generate comprehensive unit tests for both Frontend (Vitest) and Backend (JUnit 5).
 
 ## Usage
 Run with the target file path.
 Example: `/test-unit frontend/hooks/use-auth.ts`
+Example: `/test-unit backend/src/main/java/com/example/service/UserService.java`
 
-## Steps
+## Logic
+**Step 0: Detect Type**
+- If file extension is `.ts` or `.tsx`: **Frontend Mode**
+- If file extension is `.java`: **Backend Mode**
 
-### 1. Analyze Target Code
-- Read the target file content.
-- Identify:
-  - Exported functions/components.
-  - Props / Arguments.
-  - Return values / Rendered output.
-  - Edge cases (null, empty, error states).
-  - External dependencies to mock (imports).
+---
 
-### 2. Check Existing Tests
-- Look for an existing test file (e.g., `*.test.ts` or `*.test.tsx`).
-- If it exists, read it to understand current coverage.
-- If not, create a new file next to the source (colocation).
+## Frontend Mode (Vitest)
 
-### 3. Generate Test Plan
-- Propose a list of test cases covering:
-  - **Happy Path**: Correct input returns correct output/UI.
-  - **Edge Cases**: Empty strings, min/max values, boundary conditions.
-  - **Error States**: Exception handling, error message display.
-  - **Interactions**: Button clicks, form submissions (using `fireEvent` or `userEvent`).
+### 1. Analyze (Frontend)
+- Identify props, return values, hooks, and dependencies.
+- Refer to `frontend-guidelines/SKILL.md`.
 
-### 4. Implement Tests (Vitest)
-- Write the test code using:
-  - `describe`, `it`, `expect` from `vitest`.
-  - `render`, `screen` from `@testing-library/react`.
-  - `renderHook`, `act` for custom hooks.
-  - `vi.fn()` for mocking callbacks.
-- **Rule**: Do not use `any`. Use proper types or mock types.
+### 2. Plan (Frontend)
+- **Happy Path**: Correct input -> Correct output/UI.
+- **Edge Cases**: Empty, null, min/max.
+- **Interactions**: Clicks, forms (use `fireEvent`/`userEvent`).
 
-### 5. Verify & Refine
-- Run the test command for the specific file:
-  `pnpm test frontend/path/to/test-file.ts`
-- If fails:
-  - Analyze error message.
-  - Correct the test code or mock implementation.
-  - Retry.
-- Check coverage if requested:
-  `pnpm test:coverage`
+### 3. Implement (Frontend)
+- Tool: `vitest`, `@testing-library/react`.
+- Methods: `render`, `renderHook`, `vi.fn()`.
+- **Constraint**: Do NOT use `any`. Use `vi.mock` for dependencies.
+
+### 4. Verify (Frontend)
+- Command: `pnpm test <path>`
+
+---
+
+## Backend Mode (JUnit 5)
+
+### 1. Analyze (Backend)
+- Identify public methods, return values, and external dependencies (Repositories, other Services).
+- Refer to `backend-guidelines/SKILL.md`.
+
+### 2. Plan (Backend)
+- **Success Scenarios**: Valid inputs return expected DTOs/Entities.
+- **Failure Scenarios**: Invalid inputs throw custom Exceptions.
+- **Mocking**: Identify which Beans need `@Mock`.
+
+### 3. Implement (Backend)
+- Tool: JUnit 5, Mockito, AssertJ.
+- annotations: `@ExtendWith(MockitoExtension.class)`.
+- **Naming**: `[TargetClass]Test.java` in `src/test/java/...` (mirror package structure).
+- **Structure**:
+  - `private @Mock Repository repository;`
+  - `private @InjectMocks Service service;`
+  - Use `given(mock.method()).willReturn(...)` or `when().thenReturn()`.
+  - Use `assertThat(result).isEqualTo(...)`.
+
+### 4. Verify (Backend)
+- Command: `./gradlew test --tests *[TestClassName]`
+  (Example: `./gradlew test --tests *UserServiceTest`)
+
+---
+
+## Final Verification
+- Run the verify command corresponding to the mode.
+- If it fails, analyze the error log, fix the code, and retry.
