@@ -62,38 +62,47 @@ description: 표준 패턴(menus)을 기반으로 풀스택(프론트엔드 + �
   - **Mapper 인터페이스**: `src/main/java/.../mapper/[Pascal]Mapper.java` 생성.
   - **Mapper XML**: `src/main/resources/mapper/[Pascal]Mapper.xml` 생성.
 
-### 3. ⚙️ 백엔드: 비즈니스 로직 및 API (Backend: Business Logic & API)
+### 3. 🔄 백엔드: DTO 및 변환기 (Backend: DTO & Converter)
+- **목표**: 데이터 전송 객체 및 매핑 로직 생성 (VO 직접 반환 금지).
+- **액션**:
+  - **DTO**: `src/main/java/.../dto/[Pascal]DTO.java` 생성.
+    - Lombok `@Data` 사용, VO 필드와 호환되도록 구성.
+  - **Struct Mapper**: `src/main/java/.../mapper/[Pascal]StructMapper.java` 생성.
+    - `@Mapper(componentModel = "spring")` 사용.
+    - `toDTO(VO vo)`, `toVO(DTO dto)` 메소드 정의.
+
+### 4. ⚙️ 백엔드: 비즈니스 로직 및 API (Backend: Business Logic & API)
 - **목표**: 서비스 및 REST 컨트롤러 구현.
 - **액션**:
   - **Service**: `src/main/java/.../service/[Pascal]Service.java` 생성.
   - **Controller**: `src/main/java/.../controller/[Pascal]Controller.java` 생성.
     - 엔드포인트: `GET /v1/mgmt/[kebab]`, `POST`, `PUT`, `DELETE`.
 
-### 4. 🛠 프론트엔드: 훅 (Frontend: Hooks)
+### 5. 🛠 프론트엔드: 훅 (Frontend: Hooks)
 - **목표**: React Query 훅 및 비즈니스 로직 생성.
 - **액션**:
   - `hooks/use-[kebab]-query.ts`: VO와 일치하는 TypeScript `interface` 정의.
   - `hooks/use-[kebab]-management.ts`: 테이블 데이터, 페이지네이션, 다이얼로그 상태 관리 로직.
 
-### 5. 🧩 프론트엔드: UI 컴포넌트 (Frontend: UI Components)
+### 6. 🧩 프론트엔드: UI 컴포넌트 (Frontend: UI Components)
 - **목표**: 화면 구성 요소 생성.
 - **액션**:
   - `columns.tsx`: 테이블 컬럼 정의 (DB 컬럼 타입 반영).
   - `input-form.tsx`: 입력 폼 생성 (예: `VARCHAR` -> Input, `TIMESTAMP` -> DatePicker, `CHAR(1)` -> Switch/Select).
   - `data-table-toolbar.tsx`, `input-dialog.tsx`: 검색 바 및 팝업 래퍼.
 
-### 6. 📄 프론트엔드: 페이지 통합 (Frontend: Page Integration)
+### 7. 📄 프론트엔드: 페이지 통합 (Frontend: Page Integration)
 - **목표**: 최종 페이지 조립.
 - **액션**:
   - `page.tsx`: 생성된 컴포넌트들을 `SearchPageLayout` 안에 배치.
 
-### 7. 🧪 테스트 작성 (write Tests)
+### 8. 🧪 테스트 작성 (write Tests)
 - **목표**: 안정적인 기능 동작을 보장하기 위한 테스트 코드 작성.
 - **액션**:
  - **Backend**: `src/test/java/...` 생성 (JUnit5) → `/test-unit` 참고
  - **Frontend(Unit)**: `components/.../[Pascal].test.tsx` (소스 옆) 생성 (Vitest) → `/test-unit` 참고
 
-### 8. ✅ 검증 (Verification)
+### 9. ✅ 검증 (Verification)
 - **목표**: 코드 리뷰 및 후속 조치 안내.
 - **액션**:
   - 생성된 파일 경로 및 임포트 구문 확인.
