@@ -1,38 +1,52 @@
----
-description: Run the 3-Agent Test Flow (Planner -> Generator -> Healer) for a specific feature.
----
-
 # Test E2E Workflow
 
-This workflow executes the 3-Agent loop to plan, generate, and verify Playwright tests for a given feature.
+This workflow executes high-level integration tests: Playwright for Frontend, Spring Boot Integration Tests for Backend.
 
 ## Usage
-Run this workflow with a feature name or description.
-Example: `/test-e2e Board File Upload`
+Run with the feature name.
+Example: `/test-e2e Board File Upload` (Frontend)
+Example: `/test-e2e User API` (Backend)
 
-## Steps
+## Logic
+**Step 0: Detect Context**
+- If task implies UI/Browser or checks `frontend/`: **Frontend Mode**
+- If task implies API/Database or checks `backend/`: **Backend Mode**
 
-### 1. 🎭 Planner (Design)
-- **Goal:** Analyze the feature requirements and create a test plan.
-- **Action:**
-  - Plan the test scenarios (happy path, error cases).
-  - Identify necessary DOM elements (selectors).
-  - Define prerequisites (login, data setup).
-  - **Output:** A concise test plan in `implementation_plan.md`.
+---
 
-### 2. 🎭 Generator (Code)
-- **Goal:** Write the actual Playwright test code.
-- **Action:**
-  - Create a new spec file in `tests/` (e.g., `tests/[feature-name].spec.ts`).
-  - Use `tests/fixtures/auth.ts` for login.
-  - Implement the steps defined in the Plan.
-  - **Output:** executable `.spec.ts` file.
+## Frontend Mode (Playwright)
 
-### 3. 🎭 Healer (Verify & Fix)
-- **Goal:** Run the test and fix any errors.
-- **Action:**
-  - Run `npx playwright test tests/[feature-name].spec.ts`.
-  - If it fails, analyze the error log.
-  - Fix the code (selectors, timeouts, logic).
-  - Retry until pass (max 3 attempts).
-  - **Output:** A passing test report.
+### 1. Plan (Frontend)
+- **Goal**: Verify user flows (clicks, navigation).
+- **Output**: Test plan in `implementation_plan.md`.
+
+### 2. Implement (Frontend)
+- **Tool**: Playwright (`tests/*.spec.ts`).
+- **Mocking**: Use `app/api/mock/...` if backend is unavailable.
+- **Helper**: Use `tests/fixtures/auth.ts` for login.
+
+### 3. Verify (Frontend)
+- Command: `pnpm test:e2e tests/...`
+
+---
+
+## Backend Mode (Spring Integration Test)
+
+### 1. Plan (Backend)
+- **Goal**: Verify API endpoints with real/embedded DB.
+- **Output**: Test plan in `implementation_plan.md`.
+
+### 2. Implement (Backend)
+- **Tool**: Spring Boot Test (`@SpringBootTest`).
+- **Location**: `src/test/java/.../integration/...`
+- **Method**: `MockMvc` or `TestRestTemplate`.
+- **Annotation**: `@AutoConfigureMockMvc`, `@Transactional`.
+
+### 3. Verify (Backend)
+- Command: `./gradlew test --tests *IntegrationTest`
+
+---
+
+## Final Verification
+- Run the verify command.
+- If it fails, analyze, fix, and retry.
