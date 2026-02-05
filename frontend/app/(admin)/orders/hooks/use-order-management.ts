@@ -5,6 +5,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query'; // Add import
 import { PaginationState } from '@tanstack/react-table';
 import { useOrders, useCreateOrder, useUpdateOrder, useDeleteOrder } from './use-order-query';
 import { useToast } from '@/hooks/use-toast';
@@ -15,8 +16,11 @@ import { PaginationParams } from '@/lib/base-resource-client';
 
 // export type OrderFilters = Omit<OrderSearchParams, keyof PaginationParams>; // Moved to types.ts
 
+// ... imports
+
 export function useOrderManagement() {
     const { toast } = useToast();
+    const queryClient = useQueryClient(); // Correctly defined
 
     // 검색 상태
     const [searchParams, setSearchParams] = useState<OrderFilters>({
@@ -38,13 +42,14 @@ export function useOrderManagement() {
     const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
 
     // API 훅
-    const { data: ordersData, isLoading, isError, error, refetch } = useOrders({
+    const { data: ordersData, isLoading, isError, error } = useOrders({
         page: pagination.pageIndex + 1,
         size: pagination.pageSize,
         sort,
         ...searchParams,
     });
 
+    // Error handling effect
     useEffect(() => {
         if (isError) {
             toast({
@@ -65,35 +70,27 @@ export function useOrderManagement() {
     const onSearch = useCallback((params: Partial<OrderFilters>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        // refetch는 자동 트리거 되므로 명시적 호출 불필요할 수 있으나, 확실히 하기 위해 유지
-        setTimeout(() => refetch(), 0);
-    }, [refetch]);
+        // Invalidate queries to trigger re-fetch with new params
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+    }, [queryClient]);
 
+    // ... (onSortChange, openDialog, closeDialog, handleSubmit, handleDelete same as before)
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
         setSort(newSort.length > 0 ? newSort : undefined);
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
-    /**
-     * 다이얼로그 열기
-     */
     const openDialog = useCallback((order?: OrderDetail) => {
         setSelectedOrder(order || null);
         setDialogOpen(true);
     }, []);
 
-    /**
-     * 다이얼로그 닫기
-     */
     const closeDialog = useCallback(() => {
         setDialogOpen(false);
         setSelectedOrder(null);
     }, []);
 
-    /**
-     * 저장 (생성/수정)
-     */
     const handleSubmit = useCallback(async (data: Partial<OrderDetail>) => {
         try {
             if (selectedOrder) {
@@ -113,9 +110,6 @@ export function useOrderManagement() {
         }
     }, [selectedOrder, createMutation, updateMutation, toast, closeDialog]);
 
-    /**
-     * 삭제
-     */
     const handleDelete = useCallback(async (orderIds: string[]) => {
         if (orderIds.length === 0) {
             toast({ title: '알림', description: '삭제할 주문을 선택해주세요.', variant: 'default' });
