@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.springrest.domain.menu.repository.MenuMapper">
+
+    <sql id="MenuColumns">
+        menu_id, menu_name, price, category, description, use_yn,
+        sys_insert_dtm, sys_insert_user_id, sys_update_dtm, sys_update_user_id
+    </sql>
+
+    <select id="findById" resultType="com.example.springrest.domain.menu.model.entity.Menu">
+        SELECT <include refid="MenuColumns"/>
+        FROM tb_menus
+        WHERE menu_id = #{menuId}
+    </select>
+
+    <select id="findAll" resultType="com.example.springrest.domain.menu.model.entity.Menu">
+        SELECT <include refid="MenuColumns"/>
+        FROM tb_menus
+        ORDER BY sys_insert_dtm DESC
+    </select>
+
+    <select id="findAllWithSearch" resultType="com.example.springrest.domain.menu.model.entity.Menu">
+        SELECT <include refid="MenuColumns"/>
+        FROM tb_menus
+        <where>
+            <if test="menuName != null and menuName != ''">
+                AND menu_name LIKE CONCAT('%', #{menuName}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+            <if test="useYn != null and useYn != ''">
+                AND use_yn = #{useYn}
+            </if>
+        </where>
+        <choose>
+            <when test="sort != null and sort != ''">
+                ORDER BY ${sort}
+            </when>
+            <otherwise>
+                ORDER BY sys_insert_dtm DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tb_menus (
+            <include refid="MenuColumns"/>
+        ) VALUES (
+            #{menuId}, #{menuName}, #{price}, #{category}, #{description}, #{useYn},
+            NOW(), #{sysInsertUserId}, NOW(), #{sysUpdateUserId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tb_menus
+        SET menu_name = #{menuName},
+            price = #{price},
+            category = #{category},
+            description = #{description},
+            use_yn = #{useYn},
+            sys_update_dtm = NOW(),
+            sys_update_user_id = #{sysUpdateUserId}
+        WHERE menu_id = #{menuId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tb_menus
+        WHERE menu_id = #{menuId}
+    </delete>
+</mapper>

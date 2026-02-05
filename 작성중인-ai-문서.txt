@@ -9,3 +9,8 @@
 # 테스트 ( frontend/backend 같이 사용)
 /Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-unit.md
 /Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-e2e.md
+
+
+예)
+새로운 화면 추가 
+/new-feature.md menu 작성 orders 소스 참조

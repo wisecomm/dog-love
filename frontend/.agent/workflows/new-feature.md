@@ -6,6 +6,8 @@ description:
 
 ## Step 1: 설계 분석
 
+- `.agent/skills/frontend-guidelines/SKILL.md` 가이드 참고
+- `.agent/skills/backend-guidelines/SKILL.md` 가이드 참고
 - 요구사항을 명확히 파악
 - 영향받는 파일 목록 작성
 - 백엔드 API 엔드포인트 확인
