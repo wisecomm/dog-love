@@ -76,5 +76,8 @@ export default defineConfig({
         command: "npm run dev",
         url: "http://localhost:3000",
         reuseExistingServer: !process.env.CI,
+        env: {
+            BACKEND_API_URL: process.env.BACKEND_API_URL || "http://localhost:8080/api",
+        },
     },
 });
