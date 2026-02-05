@@ -19,6 +19,12 @@ description: 표준 패턴(menus)을 기반으로 풀스택(프론트엔드 + �
 - `src/main/resources/db/migration` 경로에서 해당 테이블 스키마를 찾아 컬럼을 분석합니다.
 - 기존 컬럼 구조에 맞춰 백엔드/프론트엔드 코드를 자동 생성합니다.
 
+### 3. 기획 문서 참조 (선택 사항)
+`--plan=[파일명]`
+예시: `/crud-agent orders 주문 --plan=implementation_plan.md`
+- **목적**: `implementation_plan.md` 등 기획 문서를 명시적으로 참조하여 더 정확한 코드를 생성합니다.
+- 지정하지 않을 경우, AI가 컨텍스트에서 관련 내용을 찾아보거나 기본 패턴을 따릅니다.
+
 ## 실행 단계 (Steps)
 
 ### 0. 🔍 레퍼런스 분석 (Analyze Reference)
@@ -36,6 +42,7 @@ description: 표준 패턴(menus)을 기반으로 풀스택(프론트엔드 + �
 - **목표**: 도메인 용어 정의 및 DB 전략 결정.
 - **액션**:
   - `--table` 플래그 유무 확인.
+  - `--plan` 플래그가 있으면 해당 파일을 `view_file`로 읽어 설계를 먼저 파악합니다.
   - **신규 테이블인 경우**:
     - 새 테이블 스키마(`tb_[snake]`) 계획 수립.
     - 주요 필드 정의: id, name, desc, use_yn, reg_dt 등.

@@ -15,5 +15,16 @@
 # 새로운 화면 추가
 - /crud-agent [모듈명] [한글명] 
 - 기존 테이블 참조 : /crud-agent [모듈명] [한글명] --table=[테이블명]
+- crud-agent [모듈명] [한글명] --table=[테이블명] --plan=implementation_plan.md
+
+
+# 기획단계 진행시 
+1. 🧠 기획 및 설계 (AI와 대화)
+   - **DB 설계**: 테이블 구조, 컬럼, 관계 논의
+   - **UI/UX 흐름**: "사용자가 목록에서 버튼을 누르면 모달이 뜨고, 입력 후 저장하면..." 등의 시나리오 논의
+   - **결과물**: `implementation_plan.md` 작성 요청 (설계 확정)
+2. 🚀 스캐폴딩 생성
+   - `/crud-agent ...`
+
 
 ??? /new-feature.md menu 작성 orders 소스 참조
