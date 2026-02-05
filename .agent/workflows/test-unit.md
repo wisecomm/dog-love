@@ -1,3 +1,7 @@
+---
+description: Generate comprehensive unit tests for Frontend (Vitest) and Backend (JUnit 5). 
+---
+
 # Unit Test Workflow
 
 This workflow guides the AI to generate comprehensive unit tests for both Frontend (Vitest) and Backend (JUnit 5).
