@@ -8,7 +8,7 @@ This workflow guides the AI to generate comprehensive unit tests using internal 
 
 ## Usage
 Run with the target file path.
-Example: `/generate-test frontend/hooks/use-auth.ts`
+Example: `/test-unit frontend/hooks/use-auth.ts`
 
 ## Steps
 

@@ -2,13 +2,13 @@
 description: Run the 3-Agent Test Flow (Planner -> Generator -> Healer) for a specific feature.
 ---
 
-# Test Agent Workflow
+# Test E2E Workflow
 
 This workflow executes the 3-Agent loop to plan, generate, and verify Playwright tests for a given feature.
 
 ## Usage
 Run this workflow with a feature name or description.
-Example: `/test Board File Upload`
+Example: `/test-e2e Board File Upload`
 
 ## Steps
 
