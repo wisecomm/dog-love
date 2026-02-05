@@ -11,6 +11,9 @@
 /Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-e2e.md
 
 
-예)
-새로운 화면 추가 
-/new-feature.md menu 작성 orders 소스 참조
+
+# 새로운 화면 추가
+- /crud-agent [모듈명] [한글명] 
+- 기존 테이블 참조 : /crud-agent [모듈명] [한글명] --table=[테이블명]
+
+??? /new-feature.md menu 작성 orders 소스 참조

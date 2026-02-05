@@ -22,15 +22,15 @@ description: 표준 패턴(menus)을 기반으로 풀스택(프론트엔드 + �
 ## 실행 단계 (Steps)
 
 ### 0. 🔍 레퍼런스 분석 (Analyze Reference)
-- **목표**: `menus` 패턴을 **반드시 읽고** 코딩 스타일을 학습.
+- **목표**: `orders` 패턴을 **반드시 읽고** 코딩 스타일을 학습.
 - **액션**: 다음 파일들을 `view_file`로 읽어 구조를 파악합니다.
   - **Backend**:
-    - `src/main/java/com/example/springrest/domain/menu/service/MenuService.java`
-    - `src/main/java/com/example/springrest/domain/menu/controller/MenuController.java`
+    - `src/main/java/com/example/springrest/domain/order/service/OrderService.java`
+    - `src/main/java/com/example/springrest/domain/order/controller/OrderController.java`
     - `src/main/resources/mapper/MenuMapper.xml`
   - **Frontend**:
-    - `app/(admin)/menus/page.tsx`
-    - `app/(admin)/menus/hooks/use-menu-management.ts`
+    - `app/(admin)/orders/page.tsx`
+    - `app/(admin)/orders/hooks/use-menu-management.ts`
 
 ### 1. 📋 컨텍스트 분석 및 계획 (Context Analysis & Planning)
 - **목표**: 도메인 용어 정의 및 DB 전략 결정.
@@ -83,12 +83,10 @@ description: 표준 패턴(menus)을 기반으로 풀스택(프론트엔드 + �
 ### 7. 🧪 테스트 작성 (write Tests)
 - **목표**: 안정적인 기능 동작을 보장하기 위한 테스트 코드 작성.
 - **액션**:
-  - **Backend**: `src/test/java/.../service/[Pascal]ServiceTest.java` 생성 (JUnit5).
-  - **Frontend**: `tests/[kebab].spec.ts` 생성 (Playwright).
+ - **Backend**: `src/test/java/...` 생성 (JUnit5) → `/test-unit` 참고
+ - **Frontend(Unit)**: `components/.../[Pascal].test.tsx` (소스 옆) 생성 (Vitest) → `/test-unit` 참고
 
 ### 8. ✅ 검증 (Verification)
 - **목표**: 코드 리뷰 및 후속 조치 안내.
 - **액션**:
   - 생성된 파일 경로 및 임포트 구문 확인.
-  - **신규 테이블**: `./gradlew bootRun` (또는 `flywayMigrate`) 실행 안내.
-  - **기존 테이블**: DB 변경 없이 백엔드 재시작 안내.
