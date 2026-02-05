@@ -3,7 +3,7 @@
 
 review-pr.md : "지금 수정한 파일들 리뷰해줘 - review-pr 워크플로우 써서"
 -- 깃허브 PR 탭 사용 : https://github.com/wisecomm/dog-love/pulls
-
+예 ) /review-pr 123 --focus="보안 이슈 위주로 봐줘"
 
 analyze-issue.md : "7번 이슈 분석해줘. (analyze-issue 워크플로우 써서)"
 -- 깃허브 이슈 탭 사용 : https://github.com/wisecomm/dog-love/issues
