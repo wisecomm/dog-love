@@ -47,6 +47,8 @@ export function useOrderManagement() {
         size: pagination.pageSize,
         sort,
         ...searchParams,
+    }, {
+        staleTime: 5000, // 5초 동안 캐시 유지
     });
 
     // Error handling effect
@@ -70,8 +72,11 @@ export function useOrderManagement() {
     const onSearch = useCallback((params: Partial<OrderFilters>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        // Invalidate queries to trigger re-fetch with new params
-        queryClient.invalidateQueries({ queryKey: ['orders'] });
+
+        // 검색 조건 변경 시 stale 여부 체크하여 재조회
+        // 1. 파라미터가 바뀌면 -> 키가 바뀌어서 자동 조회
+        // 2. 파라미터가 안 바뀌면 -> stale 상태일 때만 재조회
+        queryClient.refetchQueries({ queryKey: ['orders'], stale: true });
     }, [queryClient]);
 
     // ... (onSortChange, openDialog, closeDialog, handleSubmit, handleDelete same as before)
