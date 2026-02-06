@@ -1,0 +1,8 @@
+
+
+### 프로젝트 초기 작업 후 
+.env.local 파일을 생성
+
+# 두 패키지를 함께 설치해야 의존성이 올바르게 연결됩니다
+pnpm install ./packages/so-grid-core-0.1.0.tgz ./packages/so-grid-react-0.1.0.tgz
+   
