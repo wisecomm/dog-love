@@ -1,8 +1,8 @@
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { login, getTokens } from "@/app/actions/auth-actions";
 import { sessionManager } from "@/lib/auth/session-manager";
@@ -27,6 +27,7 @@ const defaultValues: Partial<AccountFormValues> = {
 export function useLogin() {
     const { toast } = useToast();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
 
     // UI State
@@ -38,6 +39,11 @@ export function useLogin() {
         resolver: zodResolver(accountFormSchema),
         defaultValues,
     });
+
+    const getRedirectUrl = useCallback(() => {
+        const returnTo = searchParams.get('return_to');
+        return returnTo ? returnTo : '/home';
+    }, [searchParams]);
 
     // Check login status & Load saved ID
     useEffect(() => {
@@ -55,15 +61,8 @@ export function useLogin() {
                         }
                     }
 
-                    // Redirect based on device
-                    const userAgent = navigator.userAgent;
-                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-
-                    if (isMobile) {
-                        router.replace('/home', { scroll: false });
-                    } else {
-                        router.replace('/home', { scroll: false });
-                    }
+                    // Redirect to safe url
+                    router.replace(getRedirectUrl(), { scroll: false });
                 }
             } catch (error) {
                 console.error("Failed to check login status:", error);
@@ -78,7 +77,7 @@ export function useLogin() {
             form.setValue("userId", savedId);
             setTimeout(() => setRememberId(true), 0);
         }
-    }, [router, form]);
+    }, [router, form, getRedirectUrl]);
 
     const onSubmit = (data: AccountFormValues) => {
         startTransition(async () => {
@@ -88,12 +87,7 @@ export function useLogin() {
                 formData.append('userPwd', data.userPwd);
 
                 const loginResult = await login(formData);
-                /*
-                // Debug: 메시지 박스로 응답 데이터 확인
-                if (typeof window !== 'undefined') {
-                    window.alert(JSON.stringify(loginResult, null, 2));
-                }
-                */
+
                 if (loginResult.code !== '200' || !loginResult.data) {
                     toast({
                         title: "로그인 실패",
@@ -115,15 +109,9 @@ export function useLogin() {
                 // Initialize session activity timer
                 sessionManager.updateLastActivity();
 
-                // Redirect based on device
-                const userAgent = navigator.userAgent;
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+                // Redirect to safe url
+                router.replace(getRedirectUrl(), { scroll: false });
 
-                if (isMobile) {
-                    router.replace('/home', { scroll: false });
-                } else {
-                    router.replace('/home', { scroll: false });
-                }
             } catch (error: unknown) {
                 console.error("onSubmit error:", error);
                 toast({
