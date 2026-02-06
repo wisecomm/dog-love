@@ -9,10 +9,9 @@ import { useQueryClient } from '@tanstack/react-query'; // Add import
 import { PaginationState } from '@tanstack/react-table';
 import { useOrders, useCreateOrder, useUpdateOrder, useDeleteOrder } from './use-order-query';
 import { useToast } from '@/hooks/use-toast';
-import { OrderDetail, OrderSearchParams, OrderFilters } from '../types';
+import { OrderDetail, OrderFilters } from '../types';
 import { formatDate } from '@/components/common';
 import { SortModel } from 'so-grid-core';
-import { PaginationParams } from '@/lib/base-resource-client';
 
 // export type OrderFilters = Omit<OrderSearchParams, keyof PaginationParams>; // Moved to types.ts
 

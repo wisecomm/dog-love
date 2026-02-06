@@ -1,17 +1,9 @@
 
 
-# 일반적인 규칙정리 ??? backend/SKILL.md 확인 필요
-/Users/danyoh/XXX-VIBE/dog-love/.agent/skills/frontend-guidelines/SKILL.md
 
-# 새로운 기능 추가 : test-unit 
-/Users/danyoh/XXX-VIBE/dog-love/frontend/.agent/workflows/new-feature.md
-
-# 테스트 ( frontend/backend 같이 사용)
-/Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-unit.md
-/Users/danyoh/XXX-VIBE/dog-love/.agent/workflows/test-e2e.md
-
-
-
+##########################################################################
+# 사용  skills, workflow 정리
+##########################################################################
 # 새로운 화면 추가
 - /crud-agent [모듈명] [한글명] 
 - 기존 테이블 참조 : /crud-agent [모듈명] [한글명] --table=[테이블명]
@@ -26,6 +18,21 @@
 2. 🚀 스캐폴딩 생성
    - `/crud-agent ...`
 
+# 테스트 ( frontend/backend 같이 사용)
+.agent/workflows/test-unit.md
+.agent/workflows/test-e2e.md
+
+
+# 버그 픽스에서 사용 : 아직 사용안했어 유용성은 모름, 어려운 버그 시 사용해봄
+.agent/workflows/bug-fix-bac.md
+.agent/workflows/bug-fix-fro.md
+
+##########################################################
 # 항상 확인 사항
 - 메인큐칙, skill, workflow 규칙 충돌이 있는지 확인
-- 
+
+# 일반적인 규칙정리 ??? frontend/SKILL.md backend/SKILL.md 확인 필요
+/Users/danyoh/XXX-VIBE/dog-love/.agent/skills/frontend-guidelines/SKILL.md
+
+
+

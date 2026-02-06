@@ -1,4 +1,8 @@
-# 버그 수정 워크플로우
+---
+description: Fix Frontend bugs (Next.js/React)
+---
+
+# 버그 수정 워크플로우 (Frontend)
 
 ## Step 1: 버그 재현 확인
 
@@ -13,7 +17,7 @@
 
 ## Step 2: 근본 원인 분석
 
-- `.pi/prompts/is.md` 프롬프트 방식으로 분석
+- `.agent/prompts/is.md` 프롬프트 방식으로 분석
 - 이슈에 적힌 원인 분석은 무시 (대체로 부정확)
 - 코드 경로를 직접 추적:
   - 컴포넌트 → 훅 → API 클라이언트 → 서버 응답
@@ -33,7 +37,7 @@
 검증:
 
 ```bash
-pnpm lint && pnpm typecheck
+cd frontend && pnpm lint && pnpm typecheck
 ```
 
 ## Step 4: 회귀 방지 테스트 작성
@@ -44,7 +48,7 @@ pnpm lint && pnpm typecheck
 검증:
 
 ```bash
-pnpm test
+cd frontend && pnpm test
 ```
 
 - 새 테스트가 통과하는지 확인
@@ -53,14 +57,9 @@ pnpm test
 ## Step 5: 전체 검증
 
 ```bash
-pnpm validate
+cd frontend && pnpm validate
 ```
 
 - lint + typecheck + test + build 모두 통과
 - 실패 시 → 해당 단계로 돌아가 수정
 
-## Step 6: 커밋
-
-- conventional commit: `fix: 버그 설명`
-- 수정 파일 + 테스트 파일 함께 커밋
-- 관련 이슈 번호 있으면 커밋 메시지에 포함 (`fix: ... (#이슈번호)`)
