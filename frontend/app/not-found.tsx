@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/common/back-button";
 import { FileQuestion, Home, ArrowLeft } from "lucide-react";
 
 /**
@@ -27,12 +28,10 @@ export default function NotFound() {
           </div>
 
           <div className="flex w-full flex-col gap-2 pt-4 sm:flex-row">
-            <Button variant="outline" className="flex-1" asChild>
-              <Link href="javascript:history.back()">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                뒤로 가기
-              </Link>
-            </Button>
+            <BackButton variant="outline" className="flex-1">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              뒤로 가기
+            </BackButton>
             <Button className="flex-1" asChild>
               <Link href="/">
                 <Home className="mr-2 h-4 w-4" />

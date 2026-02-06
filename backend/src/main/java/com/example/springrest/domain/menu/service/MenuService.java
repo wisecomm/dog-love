@@ -1,13 +1,9 @@
 package com.example.springrest.domain.menu.service;
 
-import com.example.springrest.domain.menu.model.dto.MenuRequest;
-import com.example.springrest.domain.menu.model.dto.MenuResponse;
-import com.example.springrest.domain.menu.model.entity.Menu;
-import com.example.springrest.domain.menu.model.mapper.MenuDtoMapper;
-import com.example.springrest.domain.menu.repository.MenuMapper;
-import com.example.springrest.global.common.service.BaseService;
+import com.example.springrest.domain.menu.model.dto.MenuInfoRequest;
+import com.example.springrest.domain.menu.model.entity.MenuInfo;
+import com.example.springrest.domain.menu.repository.MenuInfoMapper;
 import com.example.springrest.global.model.dto.PageResponse;
-import com.example.springrest.global.util.SortValidator;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
@@ -17,61 +13,60 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.springrest.global.common.service.BaseService;
+import com.example.springrest.domain.menu.model.dto.MenuInfoResponse;
+import com.example.springrest.domain.menu.model.mapper.MenuDtoMapper;
+
 /**
- * 메뉴 서비스
+ * 메뉴 정보 서비스
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MenuService extends BaseService<Menu, String, MenuMapper> {
+public class MenuService extends BaseService<MenuInfo, String, MenuInfoMapper> {
 
-    private final MenuMapper menuMapper;
+    private final MenuInfoMapper menuInfoMapper;
     private final MenuDtoMapper menuDtoMapper;
-    private final SortValidator sortValidator;
 
     @Override
-    protected MenuMapper getMapper() {
-        return menuMapper;
+    protected MenuInfoMapper getMapper() {
+        return menuInfoMapper;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<MenuResponse> getAllMenus(int page, int size, String menuName, String category, String useYn,
-            String sort) {
+    public List<MenuInfoResponse> getAllMenus() {
+        return menuDtoMapper.toResponseList(menuInfoMapper.findAll());
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<MenuInfoResponse> getMenusWithPagination(int page, int size, String searchId) {
         PageHelper.startPage(page, size);
 
-        // Sort validation
-        String sortClause = null;
-        if (sort != null && !sort.isEmpty()) {
-            String[] parts = sort.split(",");
-            if (parts.length == 2) {
-                // Assuming "menus" is the context for validation
-                sortClause = sortValidator.validateAndConvert("menus", parts[0], parts[1]);
-            }
-        }
-
-        List<Menu> menus = menuMapper.findAllWithSearch(menuName, category, useYn, sortClause);
-        PageInfo<Menu> pageInfo = new PageInfo<>(menus);
+        List<MenuInfo> menus = menuInfoMapper.findAllWithSearch(searchId);
+        PageInfo<MenuInfo> pageInfo = new PageInfo<>(menus);
 
         return PageResponse.of(pageInfo, menuDtoMapper.toResponseList(menus));
     }
 
     @Transactional(readOnly = true)
-    public MenuResponse getMenuById(String menuId) {
+    public List<MenuInfoResponse> getMenusByUserId(String userId) {
+        return menuDtoMapper.toResponseList(menuInfoMapper.findByUserId(userId));
+    }
+
+    @Transactional(readOnly = true)
+    public MenuInfoResponse getMenuById(String menuId) {
         return menuDtoMapper.toResponse(super.findById(menuId));
     }
 
     @Transactional
-    public void createMenu(MenuRequest request) {
-        if (super.findById(request.getMenuId()) != null) {
-            throw new IllegalArgumentException("이미 존재하는 메뉴 ID입니다: " + request.getMenuId());
-        }
-        Menu menu = menuDtoMapper.toEntity(request);
+    public void createMenu(MenuInfoRequest request) {
+        MenuInfo menu = menuDtoMapper.toEntity(request);
         super.create(menu);
     }
 
     @Transactional
-    public void updateMenu(MenuRequest request) {
-        Menu menu = menuDtoMapper.toEntity(request);
+    public void updateMenu(MenuInfoRequest request) {
+        MenuInfo menu = menuDtoMapper.toEntity(request);
         super.update(menu);
     }
 

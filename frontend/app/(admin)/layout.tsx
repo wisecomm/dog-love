@@ -1,0 +1,36 @@
+"use client";
+
+
+import { Footer } from "@/components/layout-admin/footer";
+import { Header } from "@/components/layout-admin/header";
+import { PageHeader } from "@/components/layout-admin/page-header";
+import { Sidebar } from "@/components/layout-admin/sidebar";
+import { SessionWatcher } from "@/components/session-watcher";
+import { Suspense } from "react";
+
+export default function AdminLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+
+
+    return (
+        <>
+            <SessionWatcher />
+            <div className="flex min-h-screen w-full bg-muted/40">
+                <Suspense fallback={null}>
+                    <Sidebar />
+                </Suspense>
+                <div className="flex flex-col flex-1 min-h-screen">
+                    <Header />
+                    <main className="flex-1 bg-slate-50/50 dark:bg-slate-950/50 py-4 px-6 overflow-y-auto">
+                        <PageHeader />
+                        {children}
+                    </main>
+                    <Footer />
+                </div>
+            </div>
+        </>
+    );
+}

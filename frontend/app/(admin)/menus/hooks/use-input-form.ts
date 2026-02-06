@@ -1,23 +1,26 @@
 import { useEffect } from "react";
-import { useForm, UseFormReturn, Resolver } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { MenuDetail } from "../types";
+import { MenuInfo } from "../types";
 
 export const menuFormSchema = z.object({
-    menuId: z.string().min(1, "메뉴 ID는 필수입니다."),
-    menuName: z.string().min(1, "메뉴명은 필수입니다."),
-    price: z.coerce.number().min(0, "가격은 0 이상이어야 합니다."),
-    category: z.string().min(1, "카테고리는 필수입니다."),
-    description: z.string().optional(),
-    useYn: z.string().min(1, "사용 여부는 필수입니다."),
+    menuId: z.string().min(2, "Menu ID must be at least 2 characters."),
+    menuName: z.string().min(1, "Menu name is required."),
+    menuLvl: z.number().min(0),
+    menuUri: z.string().optional().or(z.literal("")),
+    menuImgUri: z.string().optional().or(z.literal("")),
+    upperMenuId: z.string().min(1),
+    menuDesc: z.string().optional().or(z.literal("")),
+    menuSeq: z.number().min(0).optional(),
+    useYn: z.string().min(1),
 });
 
 export type MenuFormValues = z.infer<typeof menuFormSchema>;
 
 export interface UseInputFormProps {
-    item?: MenuDetail | null;
-    onSubmit: (data: Partial<MenuDetail>) => Promise<void>;
+    item?: MenuInfo | null;
+    onSubmit: (data: Partial<MenuInfo>) => Promise<void>;
 }
 
 export interface UseInputFormReturn {
@@ -29,29 +32,35 @@ export interface UseInputFormReturn {
 const defaultValues: MenuFormValues = {
     menuId: "",
     menuName: "",
-    price: 0,
-    category: "",
-    description: "",
-    useYn: "Y",
+    menuLvl: 1,
+    menuUri: "",
+    menuImgUri: "",
+    upperMenuId: "none",
+    menuDesc: "",
+    menuSeq: 0,
+    useYn: "1",
 };
 
 export function useInputForm({ item, onSubmit }: UseInputFormProps): UseInputFormReturn {
-    const isEdit = !!item;
+    const isEdit = !!(item && item.menuId);
 
     const form = useForm<MenuFormValues>({
-        resolver: zodResolver(menuFormSchema) as Resolver<MenuFormValues>,
+        resolver: zodResolver(menuFormSchema),
         defaultValues,
     });
 
     useEffect(() => {
         if (item) {
             form.reset({
-                menuId: item.menuId || "",
-                menuName: item.menuName || "",
-                price: item.price || 0,
-                category: item.category || "",
-                description: item.description || "",
-                useYn: item.useYn || "Y",
+                menuId: item.menuId,
+                menuName: item.menuName,
+                menuLvl: item.menuLvl,
+                menuUri: item.menuUri || "",
+                menuImgUri: item.menuImgUri || "",
+                upperMenuId: item.upperMenuId || "none",
+                menuDesc: item.menuDesc || "",
+                menuSeq: item.menuSeq || 0,
+                useYn: item.useYn,
             });
         } else {
             form.reset(defaultValues);
@@ -59,7 +68,14 @@ export function useInputForm({ item, onSubmit }: UseInputFormProps): UseInputFor
     }, [item, form]);
 
     const onFormSubmit = async (data: MenuFormValues) => {
-        await onSubmit(data);
+        const sanitizedData: Partial<MenuInfo> = {
+            ...data,
+            upperMenuId: data.upperMenuId === "none" ? null : data.upperMenuId,
+            menuUri: data.menuUri === "" ? null : data.menuUri,
+            menuImgUri: data.menuImgUri === "" ? null : data.menuImgUri,
+            menuDesc: data.menuDesc === "" ? null : data.menuDesc,
+        };
+        await onSubmit(sanitizedData);
     };
 
     return {

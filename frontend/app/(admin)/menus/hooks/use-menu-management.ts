@@ -1,45 +1,42 @@
 /**
  * useMenuManagement Hook
  * 
- * 메뉴 관리 페이지의 비즈니스 로직 캡슐화
+ * 메뉴 관리 페이지의 모든 비즈니스 로직을 캡슐화
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { PaginationState } from '@tanstack/react-table';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useMenus, useCreateMenu, useUpdateMenu, useDeleteMenu } from './use-menu-query';
 import { useToast } from '@/hooks/use-toast';
-import { MenuDetail, MenuFilters } from '../types';
-import { SortModel } from 'so-grid-core';
+import { MenuInfo } from '../types';
 
-export function useMenuManagement() {
+/**
+ * 메뉴 관리 훅 리턴 타입
+ */
+export interface UseMenuManagementReturn {
+    // 데이터
+    menus: MenuInfo[];
+    isLoading: boolean;
+
+    // 선택된 메뉴
+    selectedMenu: MenuInfo | null;
+    selectMenu: (menu: MenuInfo) => void;
+    addChildMenu: (parentId: string, level: number) => void;
+
+    // CRUD 작업
+    handleCreate: (data: Partial<MenuInfo>) => Promise<void>;
+    handleUpdate: (data: Partial<MenuInfo>) => Promise<void>;
+    handleDelete: (menuId: string) => Promise<void>;
+    handleSubmit: (data: Partial<MenuInfo>) => Promise<void>;
+}
+
+/**
+ * 메뉴 관리 훅
+ */
+export function useMenuManagement(): UseMenuManagementReturn {
     const { toast } = useToast();
 
-    // 검색 상태
-    const [searchParams, setSearchParams] = useState<MenuFilters>({
-        menuName: '',
-        category: '',
-        useYn: '',
-    });
-
-    const [sort, setSort] = useState<string[] | undefined>(undefined);
-
-    // 페이지네이션 상태
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10,
-    });
-
-    // 다이얼로그 상태
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedMenu, setSelectedMenu] = useState<MenuDetail | null>(null);
-
-    // API 훅
-    const { data: menusData, isLoading, isError, error, refetch } = useMenus({
-        page: pagination.pageIndex + 1,
-        size: pagination.pageSize,
-        sort,
-        ...searchParams,
-    });
+    // API 훅 - 메뉴는 트리 구조로 전체 목록이 필요하므로 큰 페이지 사이즈 사용
+    const { data: menusData, isLoading, isError, error } = useMenus({ page: 0, size: 1000 });
 
     useEffect(() => {
         if (isError) {
@@ -51,100 +48,162 @@ export function useMenuManagement() {
         }
     }, [isError, error, toast]);
 
+    // 메뉴 데이터가 변경될 때만 재계산
+    const menus = useMemo(() => menusData?.list ?? [], [menusData]);
+
     const createMutation = useCreateMenu();
     const updateMutation = useUpdateMenu();
     const deleteMutation = useDeleteMenu();
 
     /**
-     * 검색 핸들러
+     * 초기 메뉴 선택 (첫 번째 루트 메뉴)
+     * useMemo를 사용하여 초기 값을 derived state로 계산
      */
-    const onSearch = useCallback((params: Partial<MenuFilters>) => {
-        setSearchParams((prev) => ({ ...prev, ...params }));
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        setTimeout(() => refetch(), 0);
-    }, [refetch]);
+    const initialMenu = useMemo(() => {
+        if (menus.length > 0) {
+            return menus.find((m: MenuInfo) => !m.upperMenuId) || menus[0];
+        }
+        return null;
+    }, [menus]);
 
-    const onSortChange = useCallback((sortModel: SortModel[]) => {
-        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
-        setSort(newSort.length > 0 ? newSort : undefined);
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    // 상태 - initialMenu가 변경되면 selectedMenu도 업데이트
+    const [selectedMenu, setSelectedMenu] = useState<MenuInfo | null>(null);
+
+    // initialMenu가 설정되고 selectedMenu가 아직 null인 경우에만 초기화
+    const effectiveSelectedMenu = selectedMenu ?? initialMenu;
+
+    /**
+     * 메뉴 선택
+     */
+    const selectMenu = useCallback((menu: MenuInfo) => {
+        setSelectedMenu(menu);
     }, []);
 
     /**
-     * 다이얼로그 열기
+     * 하위 메뉴 추가
      */
-    const openDialog = useCallback((menu?: MenuDetail) => {
-        setSelectedMenu(menu || null);
-        setDialogOpen(true);
+    const addChildMenu = useCallback((parentId: string, level: number) => {
+        setSelectedMenu({
+            menuId: '',
+            menuName: '',
+            menuLvl: level,
+            upperMenuId: parentId,
+            leftMenuYn: 'Y',
+            useYn: '1',
+            adminMenuYn: 'N',
+            personalDataYn: 'N',
+        } as MenuInfo);
     }, []);
 
     /**
-     * 다이얼로그 닫기
+     * 메뉴 생성
      */
-    const closeDialog = useCallback(() => {
-        setDialogOpen(false);
-        setSelectedMenu(null);
-    }, []);
-
-    /**
-     * 저장 (생성/수정)
-     */
-    const handleSubmit = useCallback(async (data: Partial<MenuDetail>) => {
+    const handleCreate = useCallback(async (data: Partial<MenuInfo>) => {
         try {
-            if (selectedMenu) {
-                await updateMutation.mutateAsync({
-                    id: selectedMenu.menuId,
-                    data,
-                });
-                toast({ title: '수정 완료', description: '메뉴가 수정되었습니다.', variant: 'success' });
-            } else {
-                await createMutation.mutateAsync(data);
-                toast({ title: '등록 완료', description: '새 메뉴가 등록되었습니다.', variant: 'success' });
-            }
-            closeDialog();
+            await createMutation.mutateAsync(data);
+
+            toast({
+                title: '등록 완료',
+                description: '새 메뉴가 등록되었습니다.',
+                variant: 'success',
+            });
         } catch (error) {
-            const message = error instanceof Error ? error.message : '저장에 실패했습니다.';
-            toast({ title: '저장 실패', description: message, variant: 'destructive' });
+            const message = error instanceof Error ? error.message : '메뉴 등록에 실패했습니다.';
+            toast({
+                title: '등록 실패',
+                description: message,
+                variant: 'destructive',
+            });
+            throw error;
         }
-    }, [selectedMenu, createMutation, updateMutation, toast, closeDialog]);
+    }, [createMutation, toast]);
 
     /**
-     * 삭제
+     * 메뉴 수정
      */
-    const handleDelete = useCallback(async (menuIds: string[]) => {
-        if (menuIds.length === 0) {
-            toast({ title: '알림', description: '삭제할 메뉴를 선택해주세요.', variant: 'default' });
-            return;
+    const handleUpdate = useCallback(async (data: Partial<MenuInfo>) => {
+        if (!selectedMenu?.menuId) {
+            throw new Error('선택된 메뉴가 없습니다.');
         }
 
-        if (!confirm(`${menuIds.length}건의 메뉴를 삭제하시겠습니까?`)) return;
+        try {
+            await updateMutation.mutateAsync({
+                id: selectedMenu.menuId,
+                data,
+            });
 
-        const results = await Promise.allSettled(
-            menuIds.map(id => deleteMutation.mutateAsync(id))
+            toast({
+                title: '수정 완료',
+                description: '메뉴 정보가 수정되었습니다.',
+                variant: 'success',
+            });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : '메뉴 수정에 실패했습니다.';
+            toast({
+                title: '수정 실패',
+                description: message,
+                variant: 'destructive',
+            });
+            throw error;
+        }
+    }, [selectedMenu, updateMutation, toast]);
+
+    /**
+     * 메뉴 삭제
+     */
+    const handleDelete = useCallback(async (menuId: string) => {
+        const confirmed = window.confirm(
+            `메뉴 ${menuId}를 삭제하시겠습니까?`
         );
 
-        const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        if (succeeded === menuIds.length) {
-            toast({ title: '삭제 완료', description: `${succeeded}개의 메뉴가 삭제되었습니다.`, variant: 'success' });
-        } else {
-            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${menuIds.length - succeeded}개 실패`, variant: 'destructive' });
+        if (!confirmed) return;
+
+        try {
+            await deleteMutation.mutateAsync(menuId);
+
+            setSelectedMenu(null);
+
+            toast({
+                title: '삭제 완료',
+                description: '메뉴가 삭제되었습니다.',
+                variant: 'success',
+            });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : '메뉴 삭제에 실패했습니다.';
+            toast({
+                title: '삭제 실패',
+                description: message,
+                variant: 'destructive',
+            });
+            throw error;
         }
     }, [deleteMutation, toast]);
 
+    /**
+     * 폼 제출 (생성 또는 수정)
+     */
+    const handleSubmit = useCallback(async (data: Partial<MenuInfo>) => {
+        if (selectedMenu?.menuId) {
+            await handleUpdate(data);
+        } else {
+            await handleCreate(data);
+        }
+    }, [selectedMenu, handleCreate, handleUpdate]);
+
     return {
-        menus: menusData?.list || [],
-        totalRows: menusData?.total || 0,
+        // 데이터
+        menus,
         isLoading,
-        pagination,
-        onPaginationChange: setPagination,
-        searchParams,
-        onSearch,
-        onSortChange,
-        dialogOpen,
-        selectedMenu,
-        openDialog,
-        closeDialog,
-        handleSubmit,
+
+        // 선택된 메뉴
+        selectedMenu: effectiveSelectedMenu,
+        selectMenu,
+        addChildMenu,
+
+        // CRUD
+        handleCreate,
+        handleUpdate,
         handleDelete,
+        handleSubmit,
     };
 }

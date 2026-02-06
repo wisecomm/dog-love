@@ -42,7 +42,7 @@ export function useLogin() {
 
     const getRedirectUrl = useCallback(() => {
         const returnTo = searchParams.get('return_to');
-        return returnTo ? returnTo : '/home';
+        return returnTo ? returnTo : '/orders';
     }, [searchParams]);
 
     // Check login status & Load saved ID

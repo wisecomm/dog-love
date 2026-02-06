@@ -1,11 +1,10 @@
 package com.example.springrest.domain.menu.service;
 
-import com.example.springrest.domain.menu.model.dto.MenuRequest;
-import com.example.springrest.domain.menu.model.dto.MenuResponse;
-import com.example.springrest.domain.menu.model.entity.Menu;
+import com.example.springrest.domain.menu.model.dto.MenuInfoRequest;
+import com.example.springrest.domain.menu.model.dto.MenuInfoResponse;
+import com.example.springrest.domain.menu.model.entity.MenuInfo;
 import com.example.springrest.domain.menu.model.mapper.MenuDtoMapper;
-import com.example.springrest.domain.menu.repository.MenuMapper;
-import com.example.springrest.global.util.SortValidator;
+import com.example.springrest.domain.menu.repository.MenuInfoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,61 +13,64 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+
+/**
+ * MenuService 단위 테스트
+ */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MenuService 테스트")
 class MenuServiceTest {
 
     @Mock
-    private MenuMapper menuMapper;
+    private MenuInfoMapper menuInfoMapper;
 
     @Mock
     private MenuDtoMapper menuDtoMapper;
 
-    @Mock
-    private SortValidator sortValidator;
-
     private MenuService menuService;
 
-    private Menu testMenu;
-    private MenuRequest testRequest;
-    private MenuResponse testResponse;
+    private MenuInfo testMenu;
+    private MenuInfoRequest testRequest;
+    private MenuInfoResponse testResponse;
 
     @BeforeEach
     void setUp() {
-        menuService = new MenuService(menuMapper, menuDtoMapper, sortValidator);
+        // Manually create MenuService and inject mocks
+        menuService = new MenuService(menuInfoMapper, menuDtoMapper);
 
-        testMenu = Menu.builder()
-                .menuId("MNU-001")
-                .menuName("Test Menu")
-                .price(10000L)
-                .category("Beverage")
-                .description("Test Description")
-                .useYn("Y")
-                .sysInsertDtm(LocalDateTime.now())
+        testMenu = MenuInfo.builder()
+                .menuId("MENU001")
+                .menuName("대시보드")
+                .menuUri("/dashboard")
+                .menuLvl(1)
+                .upperMenuId(null)
+                .menuSeq(1)
+                .useYn("1")
                 .build();
 
-        testRequest = new MenuRequest();
-        testRequest.setMenuId("MNU-001");
-        testRequest.setMenuName("Test Menu");
-        testRequest.setPrice(10000L);
-        testRequest.setCategory("Beverage");
-        testRequest.setDescription("Test Description");
-        testRequest.setUseYn("Y");
+        testRequest = MenuInfoRequest.builder()
+                .menuId("MENU001")
+                .menuName("대시보드")
+                .menuUri("/dashboard")
+                .menuLvl(1)
+                .upperMenuId(null)
+                .menuSeq(1)
+                .useYn("1")
+                .build();
 
-        testResponse = MenuResponse.builder()
-                .menuId("MNU-001")
-                .menuName("Test Menu")
-                .price(10000L)
-                .category("Beverage")
-                .description("Test Description")
-                .useYn("Y")
-                .sysInsertDtm(LocalDateTime.now())
+        testResponse = MenuInfoResponse.builder()
+                .menuId("MENU001")
+                .menuName("대시보드")
+                .menuUri("/dashboard")
+                .menuLvl(1)
+                .upperMenuId(null)
+                .menuSeq(1)
+                .useYn("1")
                 .build();
     }
 
@@ -77,33 +79,63 @@ class MenuServiceTest {
     class GetMenus {
 
         @Test
-        @DisplayName("ID로 메뉴 조회 성공")
-        void getMenuById_Success() {
+        @DisplayName("전체 메뉴 조회 성공")
+        void getAllMenus_Success() {
             // given
-            given(menuMapper.findById("MNU-001")).willReturn(testMenu);
-            given(menuDtoMapper.toResponse(any(Menu.class))).willReturn(testResponse);
+            given(menuInfoMapper.findAll()).willReturn(List.of(testMenu));
+            given(menuDtoMapper.toResponseList(List.of(testMenu))).willReturn(List.of(testResponse));
 
             // when
-            MenuResponse result = menuService.getMenuById("MNU-001");
+            List<MenuInfoResponse> result = menuService.getAllMenus();
 
             // then
-            assertThat(result).isNotNull();
-            assertThat(result.getMenuId()).isEqualTo("MNU-001");
-            assertThat(result.getMenuName()).isEqualTo("Test Menu");
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getMenuId()).isEqualTo("MENU001");
         }
 
         @Test
-        @DisplayName("존재하지 않는 메뉴 조회시 null 반환 (Service에서 null 체크 안하는 경우)")
+        @DisplayName("메뉴 ID로 조회 성공")
+        void getMenuById_Success() {
+            // given
+            given(menuInfoMapper.findById("MENU001")).willReturn(testMenu);
+            given(menuDtoMapper.toResponse(testMenu)).willReturn(testResponse);
+
+            // when
+            MenuInfoResponse result = menuService.getMenuById("MENU001");
+
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.getMenuId()).isEqualTo("MENU001");
+            assertThat(result.getMenuName()).isEqualTo("대시보드");
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 메뉴 조회시 null 반환")
         void getMenuById_NotFound() {
             // given
-            given(menuMapper.findById("invalid")).willReturn(null);
+            given(menuInfoMapper.findById("INVALID")).willReturn(null);
             given(menuDtoMapper.toResponse(null)).willReturn(null);
 
             // when
-            MenuResponse result = menuService.getMenuById("invalid");
+            MenuInfoResponse result = menuService.getMenuById("INVALID");
 
             // then
             assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("사용자별 메뉴 조회 성공")
+        void getMenusByUserId_Success() {
+            // given
+            given(menuInfoMapper.findByUserId("user001")).willReturn(List.of(testMenu));
+            given(menuDtoMapper.toResponseList(List.of(testMenu))).willReturn(List.of(testResponse));
+
+            // when
+            List<MenuInfoResponse> result = menuService.getMenusByUserId("user001");
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getMenuName()).isEqualTo("대시보드");
         }
     }
 
@@ -115,28 +147,15 @@ class MenuServiceTest {
         @DisplayName("메뉴 생성 성공")
         void createMenu_Success() {
             // given
-            given(menuMapper.findById("MNU-001")).willReturn(null); // ID check
             given(menuDtoMapper.toEntity(testRequest)).willReturn(testMenu);
-            given(menuMapper.insert(any(Menu.class))).willReturn(1);
+            given(menuInfoMapper.insert(any(MenuInfo.class))).willReturn(1);
 
             // when
             assertThatCode(() -> menuService.createMenu(testRequest))
                     .doesNotThrowAnyException();
 
             // then
-            then(menuMapper).should().insert(any(Menu.class));
-        }
-
-        @Test
-        @DisplayName("중복 ID로 생성시 예외 발생")
-        void createMenu_DuplicateId() {
-            // given
-            given(menuMapper.findById("MNU-001")).willReturn(testMenu);
-
-            // when & then
-            assertThatThrownBy(() -> menuService.createMenu(testRequest))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("이미 존재하는 메뉴 ID");
+            then(menuInfoMapper).should().insert(any(MenuInfo.class));
         }
     }
 
@@ -149,14 +168,14 @@ class MenuServiceTest {
         void updateMenu_Success() {
             // given
             given(menuDtoMapper.toEntity(testRequest)).willReturn(testMenu);
-            given(menuMapper.update(any(Menu.class))).willReturn(1);
+            given(menuInfoMapper.update(any(MenuInfo.class))).willReturn(1);
 
             // when
             assertThatCode(() -> menuService.updateMenu(testRequest))
                     .doesNotThrowAnyException();
 
             // then
-            then(menuMapper).should().update(any(Menu.class));
+            then(menuInfoMapper).should().update(any(MenuInfo.class));
         }
     }
 
@@ -168,14 +187,14 @@ class MenuServiceTest {
         @DisplayName("메뉴 삭제 성공")
         void deleteMenu_Success() {
             // given
-            given(menuMapper.delete("MNU-001")).willReturn(1);
+            given(menuInfoMapper.delete("MENU001")).willReturn(1);
 
             // when
-            assertThatCode(() -> menuService.deleteMenu("MNU-001"))
+            assertThatCode(() -> menuService.deleteMenu("MENU001"))
                     .doesNotThrowAnyException();
 
             // then
-            then(menuMapper).should().delete("MNU-001");
+            then(menuInfoMapper).should().delete("MENU001");
         }
     }
 }

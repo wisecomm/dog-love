@@ -1,24 +1,13 @@
-/**
- * Menu Types
- */
-
-import { PaginationParams } from '@/lib/base-resource-client';
-
-export interface MenuDetail {
+export interface MenuInfo {
     menuId: string;
+    menuLvl: number;
+    menuUri?: string | null;
+    menuImgUri?: string | null;
     menuName: string;
-    price: number;
-    category: string;
-    description: string;
+    upperMenuId?: string | null;
+    menuDesc?: string | null;
+    menuSeq?: number | null;
     useYn: string;
     sysInsertDtm?: string;
     sysUpdateDtm?: string;
 }
-
-export interface MenuSearchParams extends PaginationParams {
-    menuName?: string;
-    category?: string;
-    useYn?: string;
-}
-
-export type MenuFilters = Omit<MenuSearchParams, keyof PaginationParams>;
