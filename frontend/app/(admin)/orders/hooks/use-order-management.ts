@@ -25,6 +25,7 @@ export function useOrderManagement() {
     const [searchParams, setSearchParams] = useState<OrderFilters>({
         custNm: '',
         startDate: '',
+        //startDate: formatDate(new Date()),
         endDate: formatDate(new Date()),
     });
 
