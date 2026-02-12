@@ -20,4 +20,5 @@ public class AuthUser {
     private String email;
     private List<UserRole> roles;
     private LocalDateTime lastLoginDt;
+    private String userProvider; // Added userProvider
 }

@@ -6,6 +6,7 @@ import com.example.springrest.domain.auth.model.dto.LoginResponse;
 import com.example.springrest.domain.auth.model.dto.TokenRefreshRequest;
 import com.example.springrest.domain.auth.model.dto.TokenValidationRequest;
 import com.example.springrest.domain.auth.model.dto.TokenValidationResponse;
+import com.example.springrest.domain.auth.model.dto.GoogleLoginRequest;
 
 import com.example.springrest.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -140,6 +141,25 @@ public class AuthController {
             authService.logout(token);
         }
         return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    /**
+     * 구글 로그인 API
+     * 
+     * @param request 구글 로그인 요청 (code)
+     * @return 로그인 응답 (JWT 토큰)
+     */
+    @Operation(summary = "구글 로그인")
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<LoginResponse>> googleLogin(
+            @Valid @RequestBody GoogleLoginRequest request) {
+
+        log.info("Google login request with code length: {}",
+                request.getCode() != null ? request.getCode().length() : 0);
+
+        LoginResponse response = authService.googleLogin(request.getCode());
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**

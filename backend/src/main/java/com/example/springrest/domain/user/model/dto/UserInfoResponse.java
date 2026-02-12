@@ -30,6 +30,7 @@ public class UserInfoResponse {
     private String userMsg; // 사용자_메시지
     private String userDesc; // 사용자_설명
     private String userStatCd; // 사용자_상태_코드
+    private String userProvider; // 사용자_구분
     private String userSnsid; // 사용자_SNS_아이디
     private String useYn; // 사용 여부
 

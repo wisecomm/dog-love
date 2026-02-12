@@ -5,10 +5,11 @@
      USER_MOBILE         VARCHAR(20),                -- 사용자_모바일
      USER_NAME           VARCHAR(100) NOT NULL,      -- 사용자_명
      USER_NICK           VARCHAR(100),               -- 사용자_닉네임
-     USER_PWD            VARCHAR(255) NOT NULL,      -- 사용자_암호 (해시된 비밀번호)
+     USER_PWD            VARCHAR(255),      -- 사용자_암호 (해시된 비밀번호)
      USER_MSG            TEXT,                       -- 사용자_메시지
      USER_DESC           TEXT,                       -- 사용자_설명
      USER_STAT_CD        VARCHAR(10),                -- 사용자_상태_코드 (예: 'ACTIVE', 'INACTIVE')
+     USER_PROVIDER       VARCHAR(20) DEFAULT 'LOCAL',    -- 사용자 구분
      USER_SNSID          VARCHAR(100),               -- 사용자_SNS_아이디
      USE_YN              CHAR(1) DEFAULT '1' NOT NULL, -- 사용 여부 ('1': 사용, '0': 미사용)
      SYS_INSERT_DTM      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- 시스템_입력_일시

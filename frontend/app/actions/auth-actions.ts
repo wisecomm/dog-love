@@ -86,6 +86,35 @@ export async function login(formData: FormData): Promise<ApiResponse<LoginData>>
     }
 }
 
+/**
+ * Google Login Action
+ */
+export async function googleLogin(code: string): Promise<ApiResponse<LoginData>> {
+    try {
+        const response = await fetch(`${API_URL}/v1/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code }),
+            cache: 'no-store',
+        });
+
+        const result: ApiResponse<LoginData> = await response.json();
+
+        if (result.code === '200' && result.data) {
+            await createSession(result.data.token, result.data.refreshToken);
+        }
+
+        return result;
+    } catch (error) {
+        console.error('Google Login Error:', error);
+        return {
+            code: '500',
+            message: 'Google login failed due to server error',
+            data: null
+        };
+    }
+}
+
 // Deprecated/Unused client-side exports kept for type safety if needed, 
 // but functionality is moved to server.
 export async function isAuthenticated() {

@@ -33,6 +33,7 @@ public class UserDetailsProviderImpl implements UserDetailsProvider {
                 .userPwd(user.getUserPwd())
                 .userName(user.getUserName())
                 .email(user.getUserEmail())
+                .userProvider(user.getUserProvider())
                 .roles(user.getRoles() != null ? new ArrayList<>(user.getRoles()) : new ArrayList<>())
                 // .lastLoginDt() // UserInfo doesn't seem to have lastLoginDt in the shown
                 // file, ignoring for now or mapping if available

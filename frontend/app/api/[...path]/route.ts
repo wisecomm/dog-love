@@ -37,16 +37,8 @@ async function proxyRequest(request: NextRequest, path: string) {
     hopByHopHeaders.forEach(header => headers.delete(header));
 
     // Inject Authorization header from Server-Side Cookie
-    // Inject Authorization header from Server-Side Cookie
     if (accessToken) {
-        console.log(`[Proxy] Access Token found: ${accessToken.substring(0, 15)}... (len: ${accessToken.length})`);
         headers.set('Authorization', `Bearer ${accessToken}`);
-
-        // 헤더 확인용 로그
-        const authHeader = headers.get('Authorization');
-        console.log(`[Proxy] Authorization header set: ${authHeader ? 'Yes' : 'No'} (${authHeader?.substring(0, 20)}...)`);
-    } else {
-        console.warn('[Proxy] No Access Token found in cookies. Headers:', JSON.stringify(Object.fromEntries(headers.entries())));
     }
 
     // 3. 요청 본문 처리
@@ -55,15 +47,12 @@ async function proxyRequest(request: NextRequest, path: string) {
         : undefined;
 
     try {
-        console.log(`[Proxy] Sending request to ${targetUrl}`);
         const response = await fetch(targetUrl, {
             method: request.method,
             headers,
             body,
             cache: 'no-store',
         });
-
-        console.log(`[Proxy] Response status: ${response.status}`);
 
         // 4. 토큰 만료 처리 (401)
         if (response.status === 401) {

@@ -4,6 +4,17 @@ spring:
   
   profiles:
     active: local
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: qblstklk50n0ijjcbp1t6vhqov7q181k.apps.googleusercontent.com
+            client-secret: _PtMRw4JF5Pp4obDjXy
+            redirect-uri: http://localhost:3000/auth/callback/google
+            scope:
+              - email
+              - profile
   servlet:
     multipart:
       max-file-size: 50MB

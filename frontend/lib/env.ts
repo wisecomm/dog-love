@@ -11,6 +11,10 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_SESSION_TIMEOUT_MS: z.string().optional(),
   /** 앱 환경 */
   NEXT_PUBLIC_APP_ENV: z.enum(['development', 'production', 'test']).optional(),
+  /** Google OAuth Client ID */
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional(),
+  /** Google OAuth Redirect URI */
+  NEXT_PUBLIC_GOOGLE_REDIRECT_URI: z.string().optional(),
 });
 
 /**
@@ -33,6 +37,8 @@ export const env = clientEnvSchema.parse({
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_SESSION_TIMEOUT_MS: process.env.NEXT_PUBLIC_SESSION_TIMEOUT_MS,
   NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  NEXT_PUBLIC_GOOGLE_REDIRECT_URI: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI,
 });
 
 /**

@@ -36,4 +36,5 @@ public class UserInfo {
     private String sysInsertUserId; // 시스템_입력_사용자_아이디
     private LocalDateTime sysUpdateDtm; // 시스템_수정_일시
     private String sysUpdateUserId; // 시스템_수정_사용자_아이디
+    private String userProvider; // 사용자_구분 (LOCAL, GOOGLE, etc.)
 }

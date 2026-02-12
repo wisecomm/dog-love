@@ -7,13 +7,13 @@
 
     <sql id="UserInfoColumns">
         u.USER_ID, u.USER_EMAIL, u.USER_MOBILE, u.USER_NAME, u.USER_NICK, u.USER_PWD, u.USER_MSG, u.USER_DESC, 
-        u.USER_STAT_CD, u.USER_SNSID, u.USE_YN, 
+        u.USER_STAT_CD, u.USER_PROVIDER, u.USER_SNSID, u.USE_YN, 
         u.SYS_INSERT_DTM, u.SYS_INSERT_USER_ID, u.SYS_UPDATE_DTM, u.SYS_UPDATE_USER_ID
     </sql>
 
     <sql id="UserInfoColumnsPlain">
         USER_ID, USER_EMAIL, USER_MOBILE, USER_NAME, USER_NICK, USER_PWD, USER_MSG, USER_DESC, 
-        USER_STAT_CD, USER_SNSID, USE_YN, 
+        USER_STAT_CD, USER_PROVIDER, USER_SNSID, USE_YN, 
         SYS_INSERT_DTM, SYS_INSERT_USER_ID, SYS_UPDATE_DTM, SYS_UPDATE_USER_ID
     </sql>
 
@@ -22,6 +22,14 @@
             <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u
         WHERE u.USER_ID = #{userId}
+    </select>
+
+    <select id="findByUserEmail" resultType="com.example.springrest.domain.user.model.entity.UserInfo">
+        SELECT 
+            <include refid="UserInfoColumns"/>
+        FROM CHMM_USER_INFO u
+        WHERE u.USER_EMAIL = #{userEmail}
+        LIMIT 1
     </select>
 
     <select id="findAll" resultType="com.example.springrest.domain.user.model.entity.UserInfo">
@@ -67,7 +75,7 @@
             <include refid="UserInfoColumnsPlain"/>
         ) VALUES (
             #{userId}, #{userEmail}, #{userMobile}, #{userName}, #{userNick}, #{userPwd}, #{userMsg}, #{userDesc}, 
-            #{userStatCd}, #{userSnsid}, #{useYn}, 
+            #{userStatCd}, #{userProvider}, #{userSnsid}, #{useYn}, 
             NOW(), #{sysInsertUserId}, NOW(), #{sysUpdateUserId}
         )
     </insert>
@@ -81,6 +89,7 @@
             USER_MSG = #{userMsg},
             USER_DESC = #{userDesc},
             USER_STAT_CD = #{userStatCd},
+            USER_PROVIDER = #{userProvider},
             USER_SNSID = #{userSnsid},
             USE_YN = #{useYn},
             SYS_UPDATE_DTM = NOW(),

@@ -15,6 +15,8 @@ import com.example.springrest.global.common.repository.BaseMapper;
 public interface UserInfoMapper extends BaseMapper<UserInfo, String> {
     UserInfo findById(@Param("userId") String userId);
 
+    UserInfo findByUserEmail(@Param("userEmail") String userEmail);
+
     List<UserInfo> findAll();
 
     List<UserInfo> findAllWithSearch(@Param("userName") String userName, @Param("startDate") String startDate,
